@@ -10,12 +10,12 @@ struct Posicion{
     pos_x: u8,    
     pos_y: u8,
 }
-
+/* 
 struct Objeto{
     posicion_en_inventario: u8,
     equipado: bool,
-
 }
+*/
 
 struct Arma{
     daño: u8,
@@ -46,7 +46,7 @@ struct Jugador{
     arma_equipada: Arma,
     armadura_equipada: Armadura,
     herramienta_equipada: Herramienta,
-    inventario: Vec<Objeto>,
+    inventario: Vec<Objeto>, // Esto tiene que ser un vector/array de distintos objetos/armas, hay que revisar
 }
 
 struct Trampa{
@@ -60,15 +60,20 @@ fn combate(mut ent_1: Entidad, mut ent_2: Entidad){
 
     match chance_de_golpe.cmp(&chance_minima_necesaria){
         Ordering::Less => println!("Le erro"), // No le pega directamente
-        Ordering::Equal => println!("Cosas"), //Le dio justo, capaz un golpe critico?
+        Ordering::Equal => println!("Cosas"), //Le dio justo
         Ordering::Greater => ent_2.salud = ent_2.salud - ent_1.daño, // Le hace el daño que deberia, aca agregar algo con la armadura
     }
-
-
-
 }
 
 fn inicializar_mapa(){
+
+}
+
+fn recoger_arma(arma: Arma, jugador: Jugador){
+
+}
+
+fn recoger_armadura(armadura: Armadura, jugador: Jugador){
 
 }
 
