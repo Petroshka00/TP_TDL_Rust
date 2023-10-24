@@ -4,18 +4,18 @@ use rand::Rng;
 use std::collections::HashMap;
 
 struct Juego{
-    niveles: [Nivel; ],
-
+    niveles: [Nivel; 5],
 }
 
 struct Nivel{
-    habitaciones: [Habitacion; ],
+    habitaciones: [Habitacion; 5],
 
 }
 
 struct Habitacion{
-    dimensiones: [[u8; ]; ],
-    puertas: [[Posicion; ]; ],
+    dimension_x : u8,
+    dimension_y : u8,
+    puertas: [Posicion; 4],
 }
 
 struct Posicion{
@@ -23,21 +23,54 @@ struct Posicion{
     pos_y: u8,
 }
 
-/* 
-struct Objeto{
-    posicion_en_inventario: u8,
-    equipado: bool,
+enum TipoObjeto {
+    Arma(Arma),
+    Pocion(Pocion),
+    Armadura(Armadura),
 }
-*/
 
 struct Arma{
     daño: u8,
     punteria: u8,
 }
-
 struct Pocion{
-    funcionalidad: fn(),
     duracion: u8,
+    funcionalidad: fn(),
+}
+
+enum TipoPocion{
+    Vida,
+    Fuerza,
+    PielDeHierro,
+    Invisibilidad,
+    Punteria,
+    Esquiva,
+}
+
+impl Pocion{
+    fn vida(jugador: &mut Jugador){
+        jugador.atributos.salud_actual += 40;
+    }
+
+    fn fuerza(jugador: &mut Jugador){
+        jugador.atributos.daño += 10;
+    }
+
+    fn pieldehierro(jugador: &mut Jugador){
+        jugador.atributos.armadura += 50;
+    }
+
+    fn invisibilidad(jugador: &mut Jugador){
+        jugador.atributos.invisible = true;
+    }
+
+    fn punteria(jugador: &mut Jugador){
+        jugador.atributos.punteria += 20;
+    }
+
+    fn esquiva(jugador: &mut Jugador){
+        jugador.atributos.esquiva += 30;
+    }
 }
 
 struct Armadura{
@@ -53,14 +86,23 @@ struct Entidad{
     armadura: u8,
     punteria: u8,
     esquiva: u8,
+    invisible: bool,
 }
 
 struct Jugador{
     atributos: Entidad,
     arma_equipada: Arma,
     armadura_equipada: Armadura,
-    herramienta_equipada: Herramienta,
-    inventario: Vec<Objeto>, // Esto tiene que ser un vector/array de distintos objetos/armas, hay que revisar
+    inventario: Vec<TipoObjeto>, 
+}
+
+impl Jugador {
+    fn recoger_objeto(&mut self, objeto: TipoObjeto) {
+        self.inventario.push(objeto)
+    }
+    fn usar_pocion(&mut self, indice_pocion: usize){
+        
+    }
 }
 
 /* 
@@ -80,7 +122,7 @@ fn combate(mut ent_1: Entidad, mut ent_2: Entidad){
     match chance_de_golpe.cmp(&chance_minima_necesaria){
         Ordering::Less => println!("Le erro"), // No le pega directamente
         Ordering::Equal => println!("Cosas"), //Le dio justo
-        Ordering::Greater => ent_2.salud = ent_2.salud - ent_1.daño, // Le hace el daño que deberia, aca agregar algo con la armadura
+        Ordering::Greater => ent_2.salud_actual = ent_2.salud_actual - ent_1.daño, // Le hace el daño que deberia, aca agregar algo con la armadura
     }
 }
 
@@ -89,15 +131,21 @@ fn generar_pos_en_hab(habitacion: Habitacion){
 
 }
 
+/* 
 // Esto le otorga el arma en el piso al jugador cuando apreta la tecla de recoger
 fn recoger_arma(arma: Arma, jugador: Jugador){
-
+    jugador.inventario.append(arma);
 }
 
 // Esto le otorga la armadura en el piso al jugador cuando apreta la tecla de recoger
 fn recoger_armadura(armadura: Armadura, jugador: Jugador){
-
+    jugador.inventario.append(armadura);
 }
+
+fn recoger_pocion(pocion: Pocion, jugador: Jugador){
+    jugador.inventario.append(pocion);
+}
+*/
 
 // Hace que el jugador (O entidad, a chequear) pase de una habitacion a otra
 fn pasar_de_habitacion(jugador: Jugador, habitacion1: Habitacion, habitacion2: Habitacion){
