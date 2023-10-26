@@ -9,13 +9,19 @@ struct Juego{
 
 struct Nivel{
     habitaciones: [Habitacion; 5],
-
 }
 
 struct Habitacion{
     dimension_x : u8,
     dimension_y : u8,
     puertas: [Posicion; 4],
+    entidades: Entidades,
+}
+
+enum Entidades{
+    Jugador(Jugador),
+    Objetos(TipoObjeto),
+    Enemigos(Enemigo),
 }
 
 struct Posicion{
@@ -31,6 +37,7 @@ enum TipoObjeto {
 
 struct Arma{
     daño: u8,
+    prob_crit: u8,
     punteria: u8,
 }
 struct Pocion{
@@ -78,11 +85,13 @@ struct Armadura{
     esquiva: u8,
 }
 
-struct Entidad{
+struct Atributos{
+    nombre: String,
     posicion: Posicion,
     salud_max: u8,
     salud_actual: u8,
     daño: u8,
+    prob_crit: u8,
     armadura: u8,
     punteria: u8,
     esquiva: u8,
@@ -90,10 +99,14 @@ struct Entidad{
 }
 
 struct Jugador{
-    atributos: Entidad,
+    atributos: Atributos,
     arma_equipada: Arma,
     armadura_equipada: Armadura,
     inventario: Vec<TipoObjeto>, 
+}
+
+struct Enemigo{
+
 }
 
 impl Jugador {
@@ -112,23 +125,66 @@ struct Trampa{
 }
 */
 
+fn es_critico(prob_critico: u8) -> bool{
+    let chance_minima_necesaria: u8 = rand::thread_rng().gen_range(1..=100);
+    if(prob_critico >= chance_minima_necesaria){
+        return true;
+    }
+    return false;
+}
+
+fn golpe(chance_de_golpe: u8, prob_critico: u8) -> u8{
+    let chance_minima_necesaria: u8 = rand::thread_rng().gen_range(1..=100);
+
+    if(chance_de_golpe >= chance_minima_necesaria){
+        if(es_critico(prob_critico)){
+            return 0;
+        } else{
+            return 1;
+        }
+    } else {
+        return 2;
+    }
+
+}
+
 /* Combate entre dos entidades, disminuye el daño de ser necesario.
     Tiene en cuenta la punteria y el esquive.
  */
-fn combate(mut ent_1: Entidad, mut ent_2: Entidad){
+fn combate(mut ent_1: Atributos, mut ent_2: Atributos){
     let chance_de_golpe: u8 = ent_1.punteria - ent_2.esquiva;
-    let chance_minima_necesaria: u8 = rand::thread_rng().gen_range(1..=100);
 
-    match chance_de_golpe.cmp(&chance_minima_necesaria){
-        Ordering::Less => println!("Le erro"), // No le pega directamente
-        Ordering::Equal => println!("Cosas"), //Le dio justo
-        Ordering::Greater => ent_2.salud_actual = ent_2.salud_actual - ent_1.daño, // Le hace el daño que deberia, aca agregar algo con la armadura
+    let resul_golpe = golpe(chance_de_golpe, ent_1.prob_crit);
+
+    match resul_golpe{
+        0 => ent_2.salud_actual -= (ent_1.daño as f32 * 1.5) as u8, 
+        1 => ent_2.salud_actual -= ent_1.daño - (ent_2.armadura / 100) * ent_1.daño,
+        2 => println!("{} fallo su ataque!", ent_1.nombre),
+        _ => return,
     }
 }
 
-// Esto genera una posicion aleatoria dentro de las dimensiones de la habitacion que recibe
-fn generar_pos_en_hab(habitacion: Habitacion){
+fn movimiento(pos_actual: &mut Posicion, direccion: char){
+    match direccion{
+        'w' => pos_actual.pos_y -= 1,
+        's' => pos_actual.pos_y += 1,
+        'a' => pos_actual.pos_x -= 1,
+        'd' => pos_actual.pos_x += 1,
+        _ => return,
+    };
+}
 
+// Esto genera una posicion aleatoria dentro de las dimensiones de la habitacion que recibe para colocar los objetos y enemigos al inicializar
+fn generar_pos_en_hab(habitacion: Habitacion) -> Posicion{
+    let pos_x_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_x);
+    let pos_y_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_y);
+
+    let posicion: Posicion = Posicion {
+        pos_x : pos_x_gen,
+        pos_y : pos_y_gen,
+    };
+
+    return posicion;
 }
 
 /* 
