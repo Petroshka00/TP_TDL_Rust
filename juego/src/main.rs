@@ -1,21 +1,35 @@
 use std::io;
 use std::cmp::Ordering;
+use std::ptr::null;
 use rand::Rng;
 use std::collections::HashMap;
 
+const NIVELES_POR_JUEGO: usize = 5;
+const HABITACIONES_POR_NIVEL: usize = 5;
+const PUERTAS_POR_HABITACION: usize = 4;
+const INDICE_JUGADOR: usize = 0;
+
 struct Juego{
-    niveles: [Nivel; 5],
+    niveles: [Nivel; NIVELES_POR_JUEGO],
 }
 
 struct Nivel{
-    habitaciones: [Habitacion; 5],
+    habitaciones: [Habitacion; HABITACIONES_POR_NIVEL],
 }
 
 struct Habitacion{
     dimension_x : u8,
     dimension_y : u8,
-    puertas: [Posicion; 4],
-    entidades: Entidades,
+    puertas: [Puerta; PUERTAS_POR_HABITACION],
+    jugadores: Vec<Jugador>,
+    enemigos: Vec<Enemigo>,
+    objetos_suelo : Vec<TipoObjeto>,
+}
+
+struct Puerta{
+    posicion: Posicion,
+    desde_hab: u8,
+    hasta_hab: u8,
 }
 
 enum Entidades{
@@ -176,12 +190,12 @@ fn movimiento(pos_actual: &mut Posicion, direccion: char){
 
 // Esto genera una posicion aleatoria dentro de las dimensiones de la habitacion que recibe para colocar los objetos y enemigos al inicializar
 fn generar_pos_en_hab(habitacion: Habitacion) -> Posicion{
-    let pos_x_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_x);
-    let pos_y_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_y);
+    // let pos_x_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_x);
+    // let pos_y_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_y);
 
     let posicion: Posicion = Posicion {
-        pos_x : pos_x_gen,
-        pos_y : pos_y_gen,
+        pos_x : rand::thread_rng().gen_range(1..=habitacion.dimension_x),
+        pos_y : rand::thread_rng().gen_range(1..=habitacion.dimension_y),
     };
 
     return posicion;
@@ -203,18 +217,32 @@ fn recoger_pocion(pocion: Pocion, jugador: Jugador){
 }
 */
 
-// Hace que el jugador (O entidad, a chequear) pase de una habitacion a otra
-fn pasar_de_habitacion(jugador: Jugador, habitacion1: Habitacion, habitacion2: Habitacion){
+fn esta_tocando_puerta(habitacion: Habitacion) -> bool{
+    return true;
+}
 
+// Hace que el jugador pase de una habitacion a otra
+fn pasar_de_habitacion(jugador: Jugador, habitacion1: &mut Habitacion, habitacion2: &mut Habitacion){
+    habitacion1.jugadores.retain(|j| j.atributos.nombre != jugador.atributos.nombre);
+    habitacion2.jugadores.push(jugador);
+}
+
+fn generar_dimensiones_hab(habitacion: &mut Habitacion) -> &mut Habitacion{
+    habitacion.dimension_x = rand::thread_rng().gen_range(4..=10);
+    habitacion.dimension_y = rand::thread_rng().gen_range(4..=10);
+
+    return habitacion;
 }
 
 // Inicializa las habitaciones de un nivel, con sus objetos, enemigos, tamaño, etc
-fn inicializar_habitaciones_nivel(nivel: Nivel){
-
+fn inicializar_habitaciones_nivel(nivel: &mut Nivel){
+    for (mut habitacion) in &mut nivel.habitaciones{
+        habitacion = generar_dimensiones_hab(habitacion);
+    }
 }
 
 // Inicializa el juego, con todos sus niveles, habitaciones, etc
-fn inicializar_juego(juego: Juego){
+fn inicializar_juego(juego: &mut Juego){
 
 }
 
