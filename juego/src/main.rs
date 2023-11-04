@@ -19,8 +19,8 @@ struct Nivel{
 }
 
 struct Habitacion{
-    dimension_x : u8,
-    dimension_y : u8,
+    dimension_x : u32,
+    dimension_y : u32,
     puertas: [Puerta; PUERTAS_POR_HABITACION],
     jugadores: Vec<Jugador>,
     enemigos: Vec<Enemigo>,
@@ -29,8 +29,8 @@ struct Habitacion{
 
 struct Puerta{
     posicion: Posicion,
-    desde_hab: u8,
-    hasta_hab: u8,
+    desde_hab: u32,
+    hasta_hab: u32,
 }
 
 enum Entidades{
@@ -40,8 +40,8 @@ enum Entidades{
 }
 
 struct Posicion{
-    pos_x: u8,    
-    pos_y: u8,
+    pos_x: u32,    
+    pos_y: u32,
 }
 
 enum TipoObjeto {
@@ -51,12 +51,12 @@ enum TipoObjeto {
 }
 
 struct Arma{
-    daño: u8,
-    prob_crit: u8,
-    punteria: u8,
+    daño: u32,
+    prob_crit: u32,
+    punteria: u32,
 }
 struct Pocion{
-    duracion: u8,
+    duracion: u32,
     funcionalidad: fn(),
 }
 
@@ -96,20 +96,20 @@ impl Pocion{
 }
 
 struct Armadura{
-    armadura: u8,
-    esquiva: u8,
+    armadura: u32,
+    esquiva: u32,
 }
 
 struct Atributos{
     nombre: String,
     posicion: Posicion,
-    salud_max: u8,
-    salud_actual: u8,
-    daño: u8,
-    prob_crit: u8,
-    armadura: u8,
-    punteria: u8,
-    esquiva: u8,
+    salud_max: u32,
+    salud_actual: u32,
+    daño: u32,
+    prob_crit: u32,
+    armadura: u32,
+    punteria: u32,
+    esquiva: u32,
     invisible: bool,
 }
 
@@ -214,21 +214,21 @@ fn crear_juego() -> Juego{
 
 /* 
 struct Trampa{
-    daño: u8,
+    daño: u32,
     efecto_especial: fn(jugador: Entidad), // Le aplica distintos efectos al jugador, ya sea modificar sus atributos u otras cosas
 }
 */
 
-fn es_critico(prob_critico: u8) -> bool{
-    let chance_minima_necesaria: u8 = rand::thread_rng().gen_range(1..=100);
+fn es_critico(prob_critico: u32) -> bool{
+    let chance_minima_necesaria: u32 = rand::thread_rng().gen_range(1..=100);
     if prob_critico >= chance_minima_necesaria {
         return true;
     }
     return false;
 }
 
-fn golpe(chance_de_golpe: u8, prob_critico: u8) -> u8{
-    let chance_minima_necesaria: u8 = rand::thread_rng().gen_range(1..=100);
+fn golpe(chance_de_golpe: u32, prob_critico: u32) -> u32{
+    let chance_minima_necesaria: u32 = rand::thread_rng().gen_range(1..=100);
 
     if chance_de_golpe >= chance_minima_necesaria {
         if es_critico(prob_critico) {
@@ -246,12 +246,12 @@ fn golpe(chance_de_golpe: u8, prob_critico: u8) -> u8{
     Tiene en cuenta la punteria y el esquive.
  */
 fn combate(mut ent_1: Atributos, mut ent_2: Atributos){
-    let chance_de_golpe: u8 = ent_1.punteria - ent_2.esquiva;
+    let chance_de_golpe: u32 = ent_1.punteria - ent_2.esquiva;
 
-    let resul_golpe = golpe(chance_de_golpe, ent_1.prob_crit);
+    let resul_golpe  = golpe(chance_de_golpe, ent_1.prob_crit);
 
     match resul_golpe{
-        0 => ent_2.salud_actual -= (ent_1.daño as f32 * 1.5) as u8, 
+        0 => ent_2.salud_actual -= (ent_1.daño as f32 * 1.5) as u32, 
         1 => ent_2.salud_actual -= ent_1.daño - (ent_2.armadura / 100) * ent_1.daño,
         2 => println!("{} fallo su ataque!", ent_1.nombre),
         _ => return,
@@ -270,8 +270,8 @@ fn movimiento(pos_actual: &mut Posicion, direccion: char){
 
 // Esto genera una posicion aleatoria dentro de las dimensiones de la habitacion que recibe para colocar los objetos y enemigos al inicializar
 fn generar_pos_en_hab(habitacion: &mut Habitacion) -> Posicion{
-    // let pos_x_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_x);
-    // let pos_y_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_y);
+    // let pos_x_gen: u32 = rand::thread_rng().gen_range(1..=habitacion.dimension_x);
+    // let pos_y_gen: u32 = rand::thread_rng().gen_range(1..=habitacion.dimension_y);
 
     let posicion: Posicion = Posicion {
         pos_x : rand::thread_rng().gen_range(1..=habitacion.dimension_x),
@@ -317,10 +317,10 @@ fn generar_dimensiones_hab(habitacion: &mut Habitacion) -> &mut Habitacion{
 fn generar_puertas(habitacion: &mut Habitacion) -> &mut Habitacion {
     for mut puertas in &mut habitacion.puertas{
            
-        let puerta = Puerta {
-            posicion: Posicion { pos_x: 1, pos_y: 2 }, 
-            desde_hab: 0, // Establece estos valores según tus necesidades
-            hasta_hab: 1, // Establece estos valores según tus necesidades
+        let puerta = Puerta { 
+            posicion: Posicion { pos_x: 1, pos_y: 2 },  // falta esa logica para que sea random
+            desde_hab: 0, 
+            hasta_hab: 1,
         };
     }
     habitacion
@@ -331,9 +331,6 @@ fn inicializar_habitaciones_nivel(nivel: &mut Nivel){
     for mut habitacion in &mut nivel.habitaciones{
         habitacion = generar_dimensiones_hab(habitacion);
         habitacion = generar_puertas(habitacion); // hace falta que returnee habitaciones? 
-        /*jugadores  --> generar_pos_en_hab
-        enemigos --> generar_pos_en_hab
-        objetos_suelo*/
     }
 }
 
@@ -350,7 +347,7 @@ fn imprimir_tablero(juego: &mut Juego){
 }
 
 fn imprimir_mapa(juego: &mut Juego){
-    //execute!(std::io::stdout(), Clear(ClearType::All)).unwrap(); // borrar pantalla
+    execute!(std::io::stdout(), Clear(ClearType::All)).unwrap(); // borrar pantalla
     
     /*  
     println!(nivel , armadura, posciones)
@@ -362,7 +359,38 @@ fn imprimir_mapa(juego: &mut Juego){
 }
 
 
+fn inicializar_jugador(juego: &mut Juego){
 
+    let mut atributos = Atributos {
+        nombre: "String".to_string(), // esto es correcto??
+        posicion: generar_pos_en_hab(&mut juego.niveles[0].habitaciones[0]),
+        salud_max: 100,
+        salud_actual: 100,
+        daño: 100,
+        prob_crit: 0,
+        armadura: 100,
+        punteria: 0,
+        esquiva: 0,
+        invisible: false,
+    }; 
+
+    let mut arma = Arma { //  espada
+        daño: 0,
+        prob_crit: 0,
+        punteria: 0,
+    };
+
+    let mut armadura = Armadura { //  armadura a implementar es de hierro
+        armadura: 0,
+        esquiva: 0,
+    };
+
+    
+    // tipo de objeto 
+
+
+   
+}
 
 
 
@@ -372,11 +400,13 @@ fn inicializar_juego(juego: &mut Juego){
     for nivel in juego.niveles.iter_mut() {
             inicializar_habitaciones_nivel(nivel);
     }
+
+    inicializar_jugador(juego);
     
+    //enemigos --> generar_pos_en_hab
     //inicializar mapas
-    // inicializar jugador
+
     // inicializar objetos
-    //pasar_de_habitacion(jugador: Jugador, habitacion1: &mut Habitacion, habitacion2: &mut Habitacion)
 
 }
 
@@ -392,14 +422,15 @@ fn main() {
 
 
     
-/* 
-// imprimir_mapa()
+/* //LOGICA DEL MAIN PERO no toma en cuenta subir de nivel 
+
+// 
     // while(estado_juego(juego)==ESTADO_JUGANDO)
     // recibir_jugada();
     //realizar_jugada();
     //imprimir_mapa();
 
-    //no toma en cuenta subir de nivel 
+    
 //if (estado_juego(juego)==ESTADO_GANADO){
    
 //} else if (estado_juego(juego)==ESTADO_PERDIDO){
