@@ -133,6 +133,85 @@ impl Jugador {
     }
 }
 
+fn crear_juego() -> Juego{
+    
+    let mut habitaciones = [
+        Habitacion {
+            dimension_x: 10,
+            dimension_y: 10,
+            puertas: [
+                Puerta {
+                    posicion: Posicion { pos_x: 1, pos_y: 2 }, 
+                    desde_hab: 0, 
+                    hasta_hab: 1, 
+                },
+                Puerta {
+                    posicion: Posicion { pos_x: 5, pos_y: 7 }, 
+                    desde_hab: 0, 
+                    hasta_hab: 2, 
+                },
+                Puerta {
+                    posicion: Posicion { pos_x: 8, pos_y: 3 }, 
+                    desde_hab: 1, 
+                    hasta_hab: 0, 
+                },
+                Puerta {
+                    posicion: Posicion { pos_x: 2, pos_y: 8 }, 
+                    desde_hab: 2, 
+                    hasta_hab: 0, 
+                },
+            ],
+            jugadores: Vec::new(),
+            enemigos: Vec::new(),
+            objetos_suelo: Vec::new(),
+        },
+        Habitacion {
+            dimension_x: 10,
+            dimension_y: 10,
+            puertas: [
+                Puerta {
+                    posicion: Posicion { pos_x: 1, pos_y: 2 }, 
+                    desde_hab: 0, 
+                    hasta_hab: 1, 
+                },
+                Puerta {
+                    posicion: Posicion { pos_x: 5, pos_y: 7 }, 
+                    desde_hab: 0, 
+                    hasta_hab: 2,
+                },
+                Puerta {
+                    posicion: Posicion { pos_x: 8, pos_y: 3 }, 
+                    desde_hab: 1, 
+                    hasta_hab: 0, 
+                },
+                Puerta {
+                    posicion: Posicion { pos_x: 2, pos_y: 8 },
+                    desde_hab: 2, 
+                    hasta_hab: 0, 
+                },
+            ],
+            jugadores: Vec::new(),
+            enemigos: Vec::new(),
+            objetos_suelo: Vec::new(),
+        },
+    ];
+
+    let mut nivel = Nivel {
+        habitaciones,
+    };
+       
+
+    let mut juego = Juego {
+        niveles: [nivel],
+    };
+
+    juego
+
+
+}
+
+
+
 /* 
 struct Trampa{
     daño: u8,
@@ -190,7 +269,7 @@ fn movimiento(pos_actual: &mut Posicion, direccion: char){
 }
 
 // Esto genera una posicion aleatoria dentro de las dimensiones de la habitacion que recibe para colocar los objetos y enemigos al inicializar
-fn generar_pos_en_hab(habitacion: Habitacion) -> Posicion{
+fn generar_pos_en_hab(habitacion: &mut Habitacion) -> Posicion{
     // let pos_x_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_x);
     // let pos_y_gen: u8 = rand::thread_rng().gen_range(1..=habitacion.dimension_y);
 
@@ -235,14 +314,30 @@ fn generar_dimensiones_hab(habitacion: &mut Habitacion) -> &mut Habitacion{
     return habitacion;
 }
 
+fn generar_puertas(habitacion: &mut Habitacion) -> &mut Habitacion {
+    for mut puertas in &mut habitacion.puertas{
+           
+        let puerta = Puerta {
+            posicion: Posicion { pos_x: 1, pos_y: 2 }, 
+            desde_hab: 0, // Establece estos valores según tus necesidades
+            hasta_hab: 1, // Establece estos valores según tus necesidades
+        };
+    }
+    habitacion
+}
+
 // Inicializa las habitaciones de un nivel, con sus objetos, enemigos, tamaño, etc
 fn inicializar_habitaciones_nivel(nivel: &mut Nivel){
     for mut habitacion in &mut nivel.habitaciones{
         habitacion = generar_dimensiones_hab(habitacion);
+        habitacion = generar_puertas(habitacion); // hace falta que returnee habitaciones? 
+        /*jugadores  --> generar_pos_en_hab
+        enemigos --> generar_pos_en_hab
+        objetos_suelo*/
     }
 }
 
-fn imprimir_tablero(){
+fn imprimir_tablero(juego: &mut Juego){
 
     /*for (i, habitacion) in nivel.habitaciones.iter().enumerate() {
         println!("Habitación {}:", i);
@@ -254,8 +349,8 @@ fn imprimir_tablero(){
 
 }
 
-fn imprimir_mapa(){
-    execute!(std::io::stdout(), Clear(ClearType::All)).unwrap(); // borrar pantalla
+fn imprimir_mapa(juego: &mut Juego){
+    //execute!(std::io::stdout(), Clear(ClearType::All)).unwrap(); // borrar pantalla
     
     /*  
     println!(nivel , armadura, posciones)
@@ -267,94 +362,17 @@ fn imprimir_mapa(){
 }
 
 
-fn crear_juego() -> Juego{
-    
-    let habitaciones = [
-        Habitacion {
-            dimension_x: 10,
-            dimension_y: 10,
-            puertas: [
-                Puerta {
-                    posicion: Posicion { pos_x: 1, pos_y: 2 }, // Inicializa con la posición deseada
-                    desde_hab: 0, // Inicializa con el valor deseado
-                    hasta_hab: 1, // Inicializa con el valor deseado
-                },
-                Puerta {
-                    posicion: Posicion { pos_x: 5, pos_y: 7 }, // Inicializa con la posición deseada
-                    desde_hab: 0, // Inicializa con el valor deseado
-                    hasta_hab: 2, // Inicializa con el valor deseado
-                },
-                Puerta {
-                    posicion: Posicion { pos_x: 8, pos_y: 3 }, // Inicializa con la posición deseada
-                    desde_hab: 1, // Inicializa con el valor deseado
-                    hasta_hab: 0, // Inicializa con el valor deseado
-                },
-                Puerta {
-                    posicion: Posicion { pos_x: 2, pos_y: 8 }, // Inicializa con la posición deseada
-                    desde_hab: 2, // Inicializa con el valor deseado
-                    hasta_hab: 0, // Inicializa con el valor deseado
-                },
-            ],
-            jugadores: Vec::new(),
-            enemigos: Vec::new(),
-            objetos_suelo: Vec::new(),
-        },
-        Habitacion {
-            dimension_x: 10,
-            dimension_y: 10,
-            puertas: [
-                Puerta {
-                    posicion: Posicion { pos_x: 1, pos_y: 2 }, // Inicializa con la posición deseada
-                    desde_hab: 0, // Inicializa con el valor deseado
-                    hasta_hab: 1, // Inicializa con el valor deseado
-                },
-                Puerta {
-                    posicion: Posicion { pos_x: 5, pos_y: 7 }, // Inicializa con la posición deseada
-                    desde_hab: 0, // Inicializa con el valor deseado
-                    hasta_hab: 2, // Inicializa con el valor deseado
-                },
-                Puerta {
-                    posicion: Posicion { pos_x: 8, pos_y: 3 }, // Inicializa con la posición deseada
-                    desde_hab: 1, // Inicializa con el valor deseado
-                    hasta_hab: 0, // Inicializa con el valor deseado
-                },
-                Puerta {
-                    posicion: Posicion { pos_x: 2, pos_y: 8 }, // Inicializa con la posición deseada
-                    desde_hab: 2, // Inicializa con el valor deseado
-                    hasta_hab: 0, // Inicializa con el valor deseado
-                },
-            ],
-            jugadores: Vec::new(),
-            enemigos: Vec::new(),
-            objetos_suelo: Vec::new(),
-        },
-    ];
-
-    let nivel = Nivel {
-        habitaciones,
-    };
-       
-
-    let mut juego = Juego {
-        niveles: [nivel],
-    };
-
-    juego
-
-
-}
 
 
 
-// Inicializa el juego, con todos sus niveles, habitaciones, etc
+
+// Inicializa el juego, con todos sus niveles, habitaciones, etc y jugados / enemigos y objetos
 fn inicializar_juego(juego: &mut Juego){
    
-    /*for nivel in juego.niveles.iter_mut() {
-        for habitacion in nivel.habitaciones.iter_mut() {
-            // Realiza la inicialización de cada habitación aquí
-        }
-    }*/
-    //inicializar_habitaciones_nivel(jugador: Jugador, habitacion1: &mut Habitacion, habitacion2: &mut Habitacion)
+    for nivel in juego.niveles.iter_mut() {
+            inicializar_habitaciones_nivel(nivel);
+    }
+    
     //inicializar mapas
     // inicializar jugador
     // inicializar objetos
@@ -369,6 +387,8 @@ fn main() {
     let mut juego = crear_juego();
 
     inicializar_juego(&mut juego);
+
+    imprimir_mapa(&mut juego);
 
 
     
