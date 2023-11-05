@@ -438,6 +438,12 @@ fn inicializar_juego(juego: &mut Juego){
 
 }
 
+/*fn es_posicion_valida(posicion: Posicion, habitacion: &Habitacion) -> bool {
+    let max_x = habitacion.dimension_x - 1;
+    let max_y = habitacion.dimension_y - 1;
+    posicion.x >= 0 && posicion.x <= max_x && posicion.y >= 0 && posicion.y <= max_y
+}*/
+
 
 fn recibir_movimiento(juego: &mut Juego)-> bool{
 
@@ -449,11 +455,22 @@ fn recibir_movimiento(juego: &mut Juego)-> bool{
     let direccion = input.trim().chars().next();
 
     if let Some(d) = direccion {
+
+        let jugador = &mut juego.niveles[0].habitaciones[0].jugadores[0];
+
+        /*let posicion_anterior = jugador.atributos.posicion;*/
+
+
         match d {
-            'w' => movimiento(&mut juego.niveles[0].habitaciones[0].jugadores[0].atributos.posicion, 'w'),
-            's' => movimiento(&mut juego.niveles[0].habitaciones[0].jugadores[0].atributos.posicion, 's'),
-            'a' => movimiento(&mut juego.niveles[0].habitaciones[0].jugadores[0].atributos.posicion, 'a'),
-            'd' => movimiento(&mut juego.niveles[0].habitaciones[0].jugadores[0].atributos.posicion, 'd'),
+            'w' => {
+                movimiento(&mut jugador.atributos.posicion, 'w');
+                /*if !es_posicion_valida(&jugador.atributos.posicion,  &juego.niveles[0].habitaciones[0]) {
+                    jugador.atributos.posicion = posicion_anterior;
+                }*/
+            }
+            's' => movimiento(&mut jugador.atributos.posicion, 's'),
+            'a' => movimiento(&mut jugador.atributos.posicion, 'a'),
+            'd' => movimiento(&mut jugador.atributos.posicion, 'd'),
             'q' => return false, 
              _ => return true,
         }
