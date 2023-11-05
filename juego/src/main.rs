@@ -40,8 +40,8 @@ enum Entidades{
 }
 
 struct Posicion{
-    pos_x: u32,    
-    pos_y: u32,
+    x: u32,    
+    y: u32,
 }
 
 enum TipoObjeto {
@@ -118,6 +118,7 @@ struct Jugador{
     arma_equipada: Arma,
     armadura_equipada: Armadura,
     inventario: Vec<TipoObjeto>, 
+    posicion: Posicion,
 }
 
 struct Enemigo{
@@ -141,22 +142,22 @@ fn crear_juego() -> Juego{
             dimension_y: 10,
             puertas: [
                 Puerta {
-                    posicion: Posicion { pos_x: 1, pos_y: 2 }, 
+                    posicion: Posicion { x: 1, y: 2 }, 
                     desde_hab: 0, 
                     hasta_hab: 1, 
                 },
                 Puerta {
-                    posicion: Posicion { pos_x: 5, pos_y: 7 }, 
+                    posicion: Posicion { x: 5, y: 7 }, 
                     desde_hab: 0, 
                     hasta_hab: 2, 
                 },
                 Puerta {
-                    posicion: Posicion { pos_x: 8, pos_y: 3 }, 
+                    posicion: Posicion { x: 8, y: 3 }, 
                     desde_hab: 1, 
                     hasta_hab: 0, 
                 },
                 Puerta {
-                    posicion: Posicion { pos_x: 2, pos_y: 8 }, 
+                    posicion: Posicion { x: 2, y: 8 }, 
                     desde_hab: 2, 
                     hasta_hab: 0, 
                 },
@@ -170,22 +171,22 @@ fn crear_juego() -> Juego{
             dimension_y: 10,
             puertas: [
                 Puerta {
-                    posicion: Posicion { pos_x: 1, pos_y: 2 }, 
+                    posicion: Posicion { x: 1, y: 2 }, 
                     desde_hab: 0, 
                     hasta_hab: 1, 
                 },
                 Puerta {
-                    posicion: Posicion { pos_x: 5, pos_y: 7 }, 
+                    posicion: Posicion { x: 5, y: 7 }, 
                     desde_hab: 0, 
                     hasta_hab: 2,
                 },
                 Puerta {
-                    posicion: Posicion { pos_x: 8, pos_y: 3 }, 
+                    posicion: Posicion { x: 8, y: 3 }, 
                     desde_hab: 1, 
                     hasta_hab: 0, 
                 },
                 Puerta {
-                    posicion: Posicion { pos_x: 2, pos_y: 8 },
+                    posicion: Posicion { x: 2, y: 8 },
                     desde_hab: 2, 
                     hasta_hab: 0, 
                 },
@@ -260,22 +261,22 @@ fn combate(mut ent_1: Atributos, mut ent_2: Atributos){
 
 fn movimiento(pos_actual: &mut Posicion, direccion: char){
     match direccion{
-        'w' => pos_actual.pos_y -= 1,
-        's' => pos_actual.pos_y += 1,
-        'a' => pos_actual.pos_x -= 1,
-        'd' => pos_actual.pos_x += 1,
+        'w' => pos_actual.y -= 1,
+        's' => pos_actual.y += 1,
+        'a' => pos_actual.x -= 1,
+        'd' => pos_actual.x += 1,
         _ => return,
     };
 }
 
 // Esto genera una posicion aleatoria dentro de las dimensiones de la habitacion que recibe para colocar los objetos y enemigos al inicializar
 fn generar_pos_en_hab(habitacion: &mut Habitacion) -> Posicion{
-    // let pos_x_gen: u32 = rand::thread_rng().gen_range(1..=habitacion.dimension_x);
-    // let pos_y_gen: u32 = rand::thread_rng().gen_range(1..=habitacion.dimension_y);
+    // let x_gen: u32 = rand::thread_rng().gen_range(1..=habitacion.dimension_x);
+    // let y_gen: u32 = rand::thread_rng().gen_range(1..=habitacion.dimension_y);
 
     let posicion: Posicion = Posicion {
-        pos_x : rand::thread_rng().gen_range(1..=habitacion.dimension_x),
-        pos_y : rand::thread_rng().gen_range(1..=habitacion.dimension_y),
+        x : rand::thread_rng().gen_range(1..=habitacion.dimension_x),
+        y : rand::thread_rng().gen_range(1..=habitacion.dimension_y),
     };
 
     return posicion;
@@ -318,7 +319,7 @@ fn generar_puertas(habitacion: &mut Habitacion) -> &mut Habitacion {
     for mut puertas in &mut habitacion.puertas{
            
         let puerta = Puerta { 
-            posicion: Posicion { pos_x: 1, pos_y: 2 },  // falta esa logica para que sea random
+            posicion: Posicion { x: 1, y: 2 },  // falta esa logica para que sea random
             desde_hab: 0, 
             hasta_hab: 1,
         };
@@ -335,14 +336,28 @@ fn inicializar_habitaciones_nivel(nivel: &mut Nivel){
 }
 
 fn imprimir_habitacion(habitacion: &Habitacion) {
-    println!("Habitación:");
+
+
     println!("Dimensiones: {}x{}", habitacion.dimension_x, habitacion.dimension_y);
-    for y in 0..habitacion.dimension_y {
-        for x in 0..habitacion.dimension_x {
-            print!("- ");
-        }
-        println!(); // Nueva línea para la siguiente fila
-    }
+    let mut matriz: Vec<Vec<String>> = vec![vec!["O".to_string(); habitacion.dimension_x as usize]; habitacion.dimension_y as usize]; // creamos una matriz de tamaño x y 
+ 
+
+    // Coloca a los jugadores en la matriz
+      for jugador in habitacion.jugadores {
+          if jugador.posicion.x < habitaciones.dimension_x && jugador.posicion.y < habitaciones.dimension_y {
+              matriz[jugador.posicion.y as usize][jugador.posicion.x as usize] = "J".to_string();
+          }
+      }
+  
+      // Imprime la matriz
+      for fila in matriz.iter() {
+          for celda in fila.iter() {
+              print!("-  ", celda);
+          }
+          println!();
+      }
+
+
    // println!("Puertas: {:?}", habitacion.puertas);
    // println!("Jugadores: {:?}", habitacion.jugadores);
 }
@@ -359,8 +374,15 @@ fn imprimir_tablero(juego: &mut Juego){
 
 }
 
+fn imprimir_jugador(juego: &mut Juego){
+
+}
+
+
+
 fn imprimir_mapa(juego: &mut Juego){
     execute!(std::io::stdout(), Clear(ClearType::All)).unwrap(); // borrar pantalla
+    
     
     /*  
     println!(nivel , armadura, posciones)
@@ -368,6 +390,7 @@ fn imprimir_mapa(juego: &mut Juego){
     */ 
 
     imprimir_tablero(juego);
+    imprimir_jugador(juego);
 
 }
 
