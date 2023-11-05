@@ -339,23 +339,21 @@ fn imprimir_habitacion(habitacion: &Habitacion) {
 
 
     println!("Dimensiones: {}x{}", habitacion.dimension_x, habitacion.dimension_y);
-    let mut matriz: Vec<Vec<String>> = vec![vec!["O".to_string(); habitacion.dimension_x as usize]; habitacion.dimension_y as usize]; // creamos una matriz de tamaño x y 
+    let mut matriz: Vec<Vec<String>> = vec![vec!["-".to_string(); habitacion.dimension_x as usize]; habitacion.dimension_y as usize]; // creamos una matriz de tamaño x y 
  
 
-    // Coloca a los jugadores en la matriz
-      for jugador in habitacion.jugadores {
-          if jugador.posicion.x < habitaciones.dimension_x && jugador.posicion.y < habitaciones.dimension_y {
-              matriz[jugador.posicion.y as usize][jugador.posicion.x as usize] = "J".to_string();
-          }
-      }
-  
-      // Imprime la matriz
-      for fila in matriz.iter() {
-          for celda in fila.iter() {
-              print!("-  ", celda);
-          }
-          println!();
-      }
+    for jugador in &habitacion.jugadores {
+        if jugador.posicion.x < habitacion.dimension_x && jugador.posicion.y < habitacion.dimension_y {
+            matriz[jugador.posicion.y as usize][jugador.posicion.x as usize] = "J".to_string();
+        }
+    }
+
+    for fila in matriz.iter() {
+        for celda in fila.iter() {
+        print!("{}  ", celda);
+        }
+        println!();
+    }
 
 
    // println!("Puertas: {:?}", habitacion.puertas);
