@@ -118,7 +118,6 @@ struct Jugador{
     arma_equipada: Arma,
     armadura_equipada: Armadura,
     inventario: Vec<TipoObjeto>, 
-    posicion: Posicion,
 }
 
 struct Enemigo{
@@ -331,7 +330,8 @@ fn generar_puertas(habitacion: &mut Habitacion) -> &mut Habitacion {
 fn inicializar_habitaciones_nivel(nivel: &mut Nivel){
     for mut habitacion in &mut nivel.habitaciones{
         habitacion = generar_dimensiones_hab(habitacion);
-        habitacion = generar_puertas(habitacion); // hace falta que returnee habitaciones? 
+        habitacion = generar_puertas(habitacion); // hace falta que returnee habitaciones?
+        habitacion = inicializar_jugador(habitacion) 
     }
 }
 
@@ -343,8 +343,8 @@ fn imprimir_habitacion(habitacion: &Habitacion) {
  
 
     for jugador in &habitacion.jugadores {
-        if jugador.posicion.x < habitacion.dimension_x && jugador.posicion.y < habitacion.dimension_y {
-            matriz[jugador.posicion.y as usize][jugador.posicion.x as usize] = "J".to_string();
+        if jugador.atributos.posicion.x < habitacion.dimension_x && jugador.atributos.posicion.y < habitacion.dimension_y {
+            matriz[jugador.atributos.posicion.y as usize][jugador.atributos.posicion.x as usize] = "J".to_string();
         }
     }
 
@@ -372,10 +372,6 @@ fn imprimir_tablero(juego: &mut Juego){
 
 }
 
-fn imprimir_jugador(juego: &mut Juego){
-
-}
-
 
 
 fn imprimir_mapa(juego: &mut Juego){
@@ -388,40 +384,40 @@ fn imprimir_mapa(juego: &mut Juego){
     */ 
 
     imprimir_tablero(juego);
-    imprimir_jugador(juego);
 
 }
 
 
-fn inicializar_jugador(juego: &mut Juego){
+fn inicializar_jugador(habitacion: &mut Habitacion) -> &mut Habitacion{
 
-    let mut atributos = Atributos {
-        nombre: "String".to_string(), // esto es correcto??
-        posicion: generar_pos_en_hab(&mut juego.niveles[0].habitaciones[0]),
-        salud_max: 100,
-        salud_actual: 100,
-        daño: 100,
-        prob_crit: 0,
-        armadura: 100,
-        punteria: 0,
-        esquiva: 0,
-        invisible: false,
-    }; 
-
-    let mut arma = Arma { //  espada
-        daño: 0,
-        prob_crit: 0,
-        punteria: 0,
+    let jugador = Jugador {
+        atributos: Atributos {
+            nombre: "String".to_string(), // esto es correcto??
+            posicion: generar_pos_en_hab( habitacion),
+            salud_max: 100,
+            salud_actual: 100,
+            daño: 100,
+            prob_crit: 0,
+            armadura: 100,
+            punteria: 0,
+            esquiva: 0,
+            invisible: false,
+        },
+        arma_equipada: Arma {
+            daño: 0,
+            prob_crit: 0,
+            punteria: 0,
+        },
+        armadura_equipada: Armadura {
+            armadura: 0,
+            esquiva: 0,
+        },
+        inventario: Vec::new(), // Inicializa el inventario como un vector vacío
     };
+ 
+    habitacion.jugadores.push(jugador);
 
-    let mut armadura = Armadura { //  armadura a implementar es de hierro
-        armadura: 0,
-        esquiva: 0,
-    };
-
-    
-    // tipo de objeto 
-
+    return habitacion;
 
    
 }
@@ -434,8 +430,6 @@ fn inicializar_juego(juego: &mut Juego){
     for nivel in juego.niveles.iter_mut() {
             inicializar_habitaciones_nivel(nivel);
     }
-
-    inicializar_jugador(juego);
     
     //enemigos --> generar_pos_en_hab
     //inicializar mapas
@@ -444,6 +438,30 @@ fn inicializar_juego(juego: &mut Juego){
 
 }
 
+
+fn recibir_movimiento(juego: &mut Juego)-> bool{
+
+    let mut input = String::new();
+
+    println!("Presiona una tecla (w/a/s/d para mover, q para salir):");
+    io::stdin().read_line(&mut input).expect("Error al leer la entrada");
+
+    let direccion = input.trim().chars().next();
+
+    if let Some(d) = direccion {
+        match d {
+            'w' => movimiento(&mut juego.niveles[0].habitaciones[0].jugadores[0].atributos.posicion, 'w'),
+            's' => movimiento(&mut juego.niveles[0].habitaciones[0].jugadores[0].atributos.posicion, 's'),
+            'a' => movimiento(&mut juego.niveles[0].habitaciones[0].jugadores[0].atributos.posicion, 'a'),
+            'd' => movimiento(&mut juego.niveles[0].habitaciones[0].jugadores[0].atributos.posicion, 'd'),
+            'q' => return false, 
+             _ => return true,
+        }
+    }
+
+    true
+
+}
 
 fn main() {
     println!("Hello, world!");
@@ -454,13 +472,20 @@ fn main() {
 
     imprimir_mapa(&mut juego);
 
+    loop {
 
-    
+        if! recibir_movimiento(&mut juego){ // recibir movimiento hace tab la jugada habria que modularizar
+            break;
+        }
+        imprimir_mapa(&mut juego);
+
+    }
+   
 /* //LOGICA DEL MAIN PERO no toma en cuenta subir de nivel 
 
 // 
     // while(estado_juego(juego)==ESTADO_JUGANDO)
-    // recibir_jugada();
+    // recibir_movimiento();
     //realizar_jugada();
     //imprimir_mapa();
 
