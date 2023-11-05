@@ -335,8 +335,6 @@ fn inicializar_habitaciones_nivel(nivel: &mut Nivel){
 }
 
 fn imprimir_habitacion(habitacion: &Habitacion) {
-    // Aquí debes implementar la lógica para imprimir la habitación
-    // Puedes acceder a los campos de la habitación, como dimensiones, puertas, jugadores, etc.
     println!("Habitación:");
     println!("Dimensiones: {}x{}", habitacion.dimension_x, habitacion.dimension_y);
     for y in 0..habitacion.dimension_y {
@@ -347,7 +345,6 @@ fn imprimir_habitacion(habitacion: &Habitacion) {
     }
    // println!("Puertas: {:?}", habitacion.puertas);
    // println!("Jugadores: {:?}", habitacion.jugadores);
-    // ... Agrega más información según tus necesidades
 }
 
 fn imprimir_tablero(juego: &mut Juego){
