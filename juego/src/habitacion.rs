@@ -1,7 +1,6 @@
 use rand::Rng;
 
-const HABITACIONES_POR_NIVEL: usize = 2; // POR AHORA 2 PERO SON 5
-const PUERTAS_POR_HABITACION: usize = 4;
+/*const PUERTAS_POR_HABITACION: usize = 4;*/
 
 pub struct Habitacion{
     pub dimension_x : u32,
@@ -31,7 +30,7 @@ pub struct Posicion{
 
 pub enum TipoObjeto {
     Arma(Arma),
-    Pocion(Pocion),
+    /*Pocion(Pocion),*/
     Armadura(Armadura),
 }
 
@@ -41,21 +40,21 @@ struct Arma{
     punteria: u32,
 }
 
-struct Pocion{
+/*struct Pocion{
     duracion: u32,
     funcionalidad: fn(),
-}
+}*/
 
-enum TipoPocion{
+/*enum TipoPocion{
     Vida,
     Fuerza,
     PielDeHierro,
     Invisibilidad,
     Punteria,
     Esquiva,
-}
+}*/
 
-impl Pocion{
+/*impl Pocion{
     fn vida(jugador: &mut Jugador){
         jugador.atributos.salud_actual += 40;
     }
@@ -79,7 +78,7 @@ impl Pocion{
     fn esquiva(jugador: &mut Jugador){
         jugador.atributos.esquiva += 30;
     }
-}
+}*/
 
 pub struct Armadura{
     armadura: u32,
@@ -153,6 +152,7 @@ impl Habitacion {
             enemigos: Vec::new(),
             objetos_suelo: Vec::new(),
         }
+
     }
 
 

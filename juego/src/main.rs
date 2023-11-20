@@ -8,8 +8,6 @@ use crossterm::{execute, terminal::{ClearType, Clear}}; // biblioteca para limpi
 mod habitacion;
 mod nivel;
 
-const NUM_NIVELES: usize = 2; 
-
 use crate::nivel::Nivel;
 use crate::habitacion::{/*Habitacion,*/ Posicion, imprimir_habitacion, inicializar_habitaciones_nivel};
 
@@ -22,7 +20,7 @@ pub struct Juego{
 fn crear_juego() -> Juego{
     
     //let mut niveles =  crear_niveles();
-    let niveles = Nivel::crear_niveles(NUM_NIVELES);
+    let niveles = Nivel::crear_niveles(NIVELES_POR_JUEGO);
 
     let juego = Juego { niveles };
 
@@ -141,7 +139,7 @@ fn inicializar_juego(juego: &mut Juego){
     let cantidad_habitaciones = 4;
    
     for nivel in juego.niveles.iter_mut() {
-            inicializar_habitaciones_nivel(cantidad_habitaciones);
+        nivel.habitaciones = inicializar_habitaciones_nivel(cantidad_habitaciones);
     }
     
     //enemigos --> generar_pos_en_hab
