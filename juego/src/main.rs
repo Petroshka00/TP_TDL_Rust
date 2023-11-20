@@ -195,15 +195,20 @@ fn recibir_movimiento(juego: &mut Juego)-> bool{
 
     let direccion = input.trim().chars().next();
 
+
+
     if let Some(d) = direccion {
         let lim_superior = juego.niveles[0].habitaciones[0].dimension_y;
         let lim_lateral = juego.niveles[0].habitaciones[0].dimension_x;
-        let jugador = &mut juego.niveles[0].habitaciones[0].jugadores[0];
-
+        let nivel = &mut juego.niveles[0];
+        let habitacion = &mut nivel.habitaciones[0];
+        let jugador = &mut habitacion.jugadores[0];
+        
+        
         /*let posicion_anterior = jugador.atributos.posicion;*/
 
         match d {
-            'w' =>  if es_movimiento_valido(jugador.atributos.posicion.y, -1, lim_superior){
+            'w' => if es_movimiento_valido(jugador.atributos.posicion.y, -1, lim_superior){
                 movimiento(&mut jugador.atributos.posicion, 'w');
             },
             's' => if es_movimiento_valido(jugador.atributos.posicion.y, 1, lim_lateral){
@@ -215,7 +220,9 @@ fn recibir_movimiento(juego: &mut Juego)-> bool{
             'd' => if es_movimiento_valido(jugador.atributos.posicion.y, -1, 0){
                 movimiento(&mut jugador.atributos.posicion, 'd');
             },
-            'e' => jugador.recoger_objeto(),
+            'e' => {
+                jugador.recoger_objeto(/*habitacion{actual} */)
+            },
             'q' =>{
                 print!("movimiento invalido");
                 return false 

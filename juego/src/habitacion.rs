@@ -1,6 +1,8 @@
 use rand::Rng;
 
 /*const PUERTAS_POR_HABITACION: usize = 4;*/
+const CANT_DE_RECOGIBLES: usize = 7; 
+
 
 pub struct Habitacion{
     pub dimension_x : u32,
@@ -8,7 +10,49 @@ pub struct Habitacion{
     pub puertas: Vec<Puerta>,
     pub jugadores: Vec<Jugador>,
     pub enemigos: Vec<Enemigo>,
-    pub objetos_suelo : Vec<TipoObjeto>,
+    pub objetos_suelo : Vec<Recogible>,
+}
+
+pub struct Recogible{
+    pub consumible : TipoObjeto, 
+    pub posicion: Posicion,
+}
+
+impl Recogible {
+
+    pub fn crear_un_objeto_random(habitacion: &mut Habitacion) -> TipoObjeto {
+        let mut rng = rand::thread_rng();
+        let opcion = rng.gen_range(0..2);
+    
+    
+        match opcion {
+            0 => TipoObjeto::Arma(Arma::new(
+                rng.gen_range(5..15), // Daño aleatorio entre 5 y 14
+                rng.gen_range(5..15), // Probabilidad de crítico aleatoria entre 5 y 14
+                rng.gen_range(5..15), // Puntería aleatoria entre 5 y 14
+            )),
+            1 => TipoObjeto::Armadura(Armadura::new(
+                rng.gen_range(5..15), // Armadura aleatoria entre 5 y 14
+                rng.gen_range(5..15), // Esquiva aleatoria entre 5 y 14
+            )),
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn crear_vector_recogible(habitacion: &mut Habitacion, num_recogibles: usize) -> Vec<Recogible> {
+        let mut recogibles = Vec::with_capacity(num_recogibles);
+
+        for _ in 0..num_recogibles {
+            let posicion = generar_pos_en_hab(habitacion);
+            let consumible = Recogible::crear_un_objeto_random(habitacion);
+    
+            recogibles.push(Recogible { consumible, posicion });
+        }
+    
+        recogibles
+    }
+    
+
 }
 
 pub struct Puerta{
@@ -27,7 +71,6 @@ pub struct Posicion{
     pub x: u32,    
     pub y: u32,
 }
-
 pub enum TipoObjeto {
     Arma(Arma),
     /*Pocion(Pocion),*/
@@ -121,6 +164,8 @@ pub struct Enemigo{
 
 }
 
+
+
 impl Habitacion {
 
     pub fn crear_habitaciones(cantidad: usize) -> Vec<Habitacion> {
@@ -160,6 +205,7 @@ impl Habitacion {
                     hasta_hab: 0,
                 },
             ],
+           
             jugadores: Vec::new(),
             enemigos: Vec::new(),
             objetos_suelo: Vec::new(),
@@ -173,10 +219,14 @@ impl Habitacion {
 
 impl Jugador {
     pub fn recoger_objeto(&mut self){
-        /*if(){*/
-            let objeto = crear_un_objeto_random();
+        /*let objeto = crear_un_objeto_random(habitacion);
+
+        if objeto.posicion == self.atributos.posicion {
             self.equipar_objeto(objeto);
-        /*}*/
+        } else {*/
+            // Lógica para manejar el caso en que la posición no es la misma
+            println!("No hay un objeto para recoger en tu posición.");
+    //}
     }
     fn equipar_objeto(&mut self, objeto: TipoObjeto) {
         match objeto {
@@ -189,24 +239,6 @@ impl Jugador {
     }*/
 }
 
-
-fn crear_un_objeto_random() -> TipoObjeto {
-    let mut rng = rand::thread_rng();
-    let opcion = rng.gen_range(0..2);
-
-    match opcion {
-        0 => TipoObjeto::Arma(Arma::new(
-            rng.gen_range(5..15), // Daño aleatorio entre 5 y 14
-            rng.gen_range(5..15), // Probabilidad de crítico aleatoria entre 5 y 14
-            rng.gen_range(5..15), // Puntería aleatoria entre 5 y 14
-        )),
-        1 => TipoObjeto::Armadura(Armadura::new(
-            rng.gen_range(5..15), // Armadura aleatoria entre 5 y 14
-            rng.gen_range(5..15), // Esquiva aleatoria entre 5 y 14
-        )),
-        _ => unreachable!(),
-    }
-}
 
 
 // Esto genera una posicion aleatoria dentro de las dimensiones de la habitacion que recibe para colocar los objetos y enemigos al inicializar
@@ -254,6 +286,7 @@ pub fn inicializar_habitaciones_nivel(cantidad_habitaciones: usize) -> Vec<Habit
         let mut habitacion = Habitacion::crear_habitacion();
         generar_dimensiones_hab(&mut habitacion);
         generar_puertas(&mut habitacion); 
+        habitacion.objetos_suelo = Recogible::crear_vector_recogible(&mut habitacion, CANT_DE_RECOGIBLES);
         inicializar_jugador(&mut habitacion);
 
         habitaciones.push(habitacion);
@@ -280,6 +313,12 @@ pub fn imprimir_habitacion(habitacion: &Habitacion) {
         print!("{}  ", celda);
         }
         println!();
+    }
+
+    for recogible in &habitacion.objetos_suelo {
+        if recogible.posicion.x < habitacion.dimension_x && recogible.posicion.y < habitacion.dimension_y {
+            matriz[recogible.posicion.y as usize][recogible.posicion.x as usize] = "R".to_string();
+        }
     }
 
 
