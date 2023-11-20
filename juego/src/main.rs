@@ -8,13 +8,51 @@ use crossterm::{execute, terminal::{ClearType, Clear}}; // biblioteca para limpi
 mod habitacion;
 mod nivel;
 
-use crate::{nivel::Nivel, habitacion::{es_posicion_valida, es_movimiento_valido}};
-use crate::habitacion::{/*Habitacion,*/ Posicion, imprimir_habitacion, inicializar_habitaciones_nivel};
+use crate::{nivel::Nivel, habitacion::es_movimiento_valido};
+use crate::habitacion::{ Jugador,Armadura, Arma, Posicion, imprimir_habitacion, inicializar_habitaciones_nivel};
 
 const NIVELES_POR_JUEGO: usize = 1;// POR AHORA 1 PERO SON 5
 
 pub struct Juego{
     niveles: Vec<Nivel>,
+}
+
+impl Juego {
+    pub fn imprimir_datos_usuario(&self) {
+        let jugador = &self.niveles[0].habitaciones[0].jugadores[0];
+        let atributos = &jugador.atributos;
+
+        println!("Nombre del jugador: {}", atributos.nombre);
+        //println!("Posición del jugador: {:?}", atributos.posicion);
+        println!("Salud actual/máxima: {}/{}", atributos.salud_actual, atributos.salud_max);
+        println!("Daño: {}", atributos.daño);
+        println!("Probabilidad de crítico: {}", atributos.prob_crit);
+        println!("Armadura: {}", atributos.armadura);
+        println!("Puntería: {}", atributos.punteria);
+        println!("Esquiva: {}", atributos.esquiva);
+
+        let estado_invisible = if atributos.invisible { "Sí" } else { "No" };
+        println!("Invisible: {}", estado_invisible);
+
+        println!("Arma equipada:");
+        self.imprimir_datos_arma(&jugador.arma_equipada);
+
+        println!("Armadura equipada:");
+        self.imprimir_datos_armadura(&jugador.armadura_equipada);
+
+        // Otros datos relacionados con el juego
+    }
+
+    fn imprimir_datos_arma(&self, arma: &Arma) {
+        println!("Daño: {}", arma.daño);
+        println!("Probabilidad de crítico: {}", arma.prob_crit);
+        println!("Puntería: {}", arma.punteria);
+    }
+
+    fn imprimir_datos_armadura(&self, armadura: &Armadura) {
+        println!("Armadura: {}", armadura.armadura);
+        println!("Esquiva: {}", armadura.esquiva);
+    }
 }
 
 fn crear_juego() -> Juego{
@@ -82,7 +120,6 @@ fn movimiento(pos_actual: &mut Posicion, direccion: char){
         's' => pos_actual.y += 1,
         'a' => pos_actual.x -= 1,
         'd' => pos_actual.x += 1,
-        /*'e' => recoger_objeto(),*/
         _ => return ,
     };
 }
@@ -166,29 +203,23 @@ fn recibir_movimiento(juego: &mut Juego)-> bool{
         /*let posicion_anterior = jugador.atributos.posicion;*/
 
         match d {
-            'w' =>  if(es_movimiento_valido(jugador.atributos.posicion.y, -1, lim_superior)){
+            'w' =>  if es_movimiento_valido(jugador.atributos.posicion.y, -1, lim_superior){
                 movimiento(&mut jugador.atributos.posicion, 'w');
             },
-                /*
-                if(es_posicion_valida(&jugador.atributos.posicion,  &juego.niveles[0].habitaciones[0])){
-                movimiento(&mut jugador.atributos.posicion, 'w');
-            }d
-                !es_posicion_valida(&jugador.atributos.posicion,  &juego.niveles[0].habitaciones[0]) {
-                    jugador.atributos.posicion = posicion_anterior;
-                
-            }
-                 */
-            's' => if(es_movimiento_valido(jugador.atributos.posicion.y, 1, lim_lateral)){
+            's' => if es_movimiento_valido(jugador.atributos.posicion.y, 1, lim_lateral){
                 movimiento(&mut jugador.atributos.posicion, 's');
             },
-            'a' => if(es_movimiento_valido(jugador.atributos.posicion.x, -1, 0)){
+            'a' => if es_movimiento_valido(jugador.atributos.posicion.x, -1, 0){
                 movimiento(&mut jugador.atributos.posicion, 'a');
             },
-            'd' => if(es_movimiento_valido(jugador.atributos.posicion.y, -1, 0)){
+            'd' => if es_movimiento_valido(jugador.atributos.posicion.y, -1, 0){
                 movimiento(&mut jugador.atributos.posicion, 'd');
             },
-            /*'e' => movimiento(&mut jugador.atributos.posicion, 'd'),*/
-            'q' => return false, 
+            'e' => jugador.recoger_objeto(),
+            'q' =>{
+                print!("movimiento invalido");
+                return false 
+            } 
              _ => return true,
         }
     }
@@ -212,6 +243,8 @@ fn main() {
             break;
         }
         imprimir_mapa(&mut juego);
+
+        (&mut juego).imprimir_datos_usuario();
 
     }
    

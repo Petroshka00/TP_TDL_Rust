@@ -34,10 +34,16 @@ pub enum TipoObjeto {
     Armadura(Armadura),
 }
 
-struct Arma{
-    daño: u32,
-    prob_crit: u32,
-    punteria: u32,
+pub struct Arma{
+    pub daño: u32,
+    pub prob_crit: u32,
+    pub punteria: u32,
+}
+
+impl Arma {
+    pub fn new(daño: u32, prob_crit: u32, punteria: u32) -> Self {
+        Arma { daño, prob_crit, punteria }
+    }
 }
 
 /*struct Pocion{
@@ -81,12 +87,18 @@ struct Arma{
 }*/
 
 pub struct Armadura{
-    armadura: u32,
-    esquiva: u32,
+    pub armadura: u32,
+    pub esquiva: u32,
+}
+
+impl Armadura {
+    pub fn new(armadura: u32, esquiva: u32) -> Self {
+        Armadura { armadura, esquiva }
+    }
 }
 
 pub struct Atributos{
-    nombre: String,
+    pub nombre: String,
     pub posicion: Posicion,
     pub salud_max: u32,
     pub salud_actual: u32,
@@ -100,9 +112,9 @@ pub struct Atributos{
 
 pub struct Jugador{
     pub atributos: Atributos,
-    arma_equipada: Arma,
-    armadura_equipada: Armadura,
-    inventario: Vec<TipoObjeto>, 
+    pub arma_equipada: Arma,
+    pub armadura_equipada: Armadura,
+    /*inventario: Vec<TipoObjeto>,*/
 }
 
 pub struct Enemigo{
@@ -160,13 +172,35 @@ impl Habitacion {
 
 
 impl Jugador {
-    fn recoger_objeto(&mut self, objeto: TipoObjeto) {
-        self.inventario.push(objeto)
+    pub fn recoger_objeto(&mut self){
+        /*if(){*/
+            let objeto = crear_un_objeto_random();
+            self.equipar_objeto(objeto);
+        /*}*/
+    }
+    fn equipar_objeto(&mut self, objeto: TipoObjeto) {
+        match objeto {
+            TipoObjeto::Arma(arma) => self.arma_equipada = arma,
+            TipoObjeto::Armadura(armadura) => self.armadura_equipada = armadura,
+        }
     }
     /*fn usar_pocion(&mut self, indice_pocion: usize){
         
     }*/
 }
+
+
+fn crear_un_objeto_random() -> TipoObjeto {
+    let mut rng = rand::thread_rng();
+    let opcion = rng.gen_range(0..1);
+
+    match opcion {
+        0 => TipoObjeto::Arma(Arma::new(10, 10,10)),
+        1 => TipoObjeto::Armadura(Armadura::new(10,10)),
+        _ => unreachable!(), 
+    }
+}
+
 
 // Esto genera una posicion aleatoria dentro de las dimensiones de la habitacion que recibe para colocar los objetos y enemigos al inicializar
 fn generar_pos_en_hab(habitacion: &mut Habitacion) -> Posicion{
@@ -271,7 +305,7 @@ fn inicializar_jugador(habitacion: &mut Habitacion) -> &mut Habitacion{
             armadura: 0,
             esquiva: 0,
         },
-        inventario: Vec::new(), // Inicializa el inventario como un vector vacío
+        /*inventario: Vec::new(), // Inicializa el inventario como un vector vacío*/
     };
  
     habitacion.jugadores.push(jugador);
@@ -282,13 +316,7 @@ fn inicializar_jugador(habitacion: &mut Habitacion) -> &mut Habitacion{
 }
 
 
-pub fn es_posicion_valida(posicion: Posicion, habitacion: &Habitacion) -> bool {
-    let max_x = habitacion.dimension_x - 1;
-    let max_y = habitacion.dimension_y - 1;
-    posicion.x >= 0 && posicion.x <= max_x && posicion.y >= 0 && posicion.y <= max_y
-}
-
 pub fn es_movimiento_valido(pos_en_eje: u32, mov_direccion: i32, limite_habitacion: u32) -> bool {
-    return((pos_en_eje as i32) + mov_direccion != (limite_habitacion as i32));
+    return (pos_en_eje as i32) + mov_direccion != (limite_habitacion as i32);
 }
 
