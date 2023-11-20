@@ -288,3 +288,7 @@ pub fn es_posicion_valida(posicion: Posicion, habitacion: &Habitacion) -> bool {
     posicion.x >= 0 && posicion.x <= max_x && posicion.y >= 0 && posicion.y <= max_y
 }
 
+pub fn es_movimiento_valido(pos_en_eje: u32, mov_direccion: i32, limite_habitacion: u32) -> bool {
+    return((pos_en_eje as i32) + mov_direccion != (limite_habitacion as i32));
+}
+

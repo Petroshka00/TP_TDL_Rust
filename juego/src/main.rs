@@ -8,7 +8,7 @@ use crossterm::{execute, terminal::{ClearType, Clear}}; // biblioteca para limpi
 mod habitacion;
 mod nivel;
 
-use crate::nivel::Nivel;
+use crate::{nivel::Nivel, habitacion::{es_posicion_valida, es_movimiento_valido}};
 use crate::habitacion::{/*Habitacion,*/ Posicion, imprimir_habitacion, inicializar_habitaciones_nivel};
 
 const NIVELES_POR_JUEGO: usize = 1;// POR AHORA 1 PERO SON 5
@@ -159,22 +159,34 @@ fn recibir_movimiento(juego: &mut Juego)-> bool{
     let direccion = input.trim().chars().next();
 
     if let Some(d) = direccion {
-
+        let lim_superior = juego.niveles[0].habitaciones[0].dimension_y;
+        let lim_lateral = juego.niveles[0].habitaciones[0].dimension_x;
         let jugador = &mut juego.niveles[0].habitaciones[0].jugadores[0];
 
         /*let posicion_anterior = jugador.atributos.posicion;*/
 
-
         match d {
-            'w' => {
+            'w' =>  if(es_movimiento_valido(jugador.atributos.posicion.y, -1, lim_superior)){
                 movimiento(&mut jugador.atributos.posicion, 'w');
-                /*if !es_posicion_valida(&jugador.atributos.posicion,  &juego.niveles[0].habitaciones[0]) {
+            },
+                /*
+                if(es_posicion_valida(&jugador.atributos.posicion,  &juego.niveles[0].habitaciones[0])){
+                movimiento(&mut jugador.atributos.posicion, 'w');
+            }d
+                !es_posicion_valida(&jugador.atributos.posicion,  &juego.niveles[0].habitaciones[0]) {
                     jugador.atributos.posicion = posicion_anterior;
-                }*/
+                
             }
-            's' => movimiento(&mut jugador.atributos.posicion, 's'),
-            'a' => movimiento(&mut jugador.atributos.posicion, 'a'),
-            'd' => movimiento(&mut jugador.atributos.posicion, 'd'),
+                 */
+            's' => if(es_movimiento_valido(jugador.atributos.posicion.y, 1, lim_lateral)){
+                movimiento(&mut jugador.atributos.posicion, 's');
+            },
+            'a' => if(es_movimiento_valido(jugador.atributos.posicion.x, -1, 0)){
+                movimiento(&mut jugador.atributos.posicion, 'a');
+            },
+            'd' => if(es_movimiento_valido(jugador.atributos.posicion.y, -1, 0)){
+                movimiento(&mut jugador.atributos.posicion, 'd');
+            },
             /*'e' => movimiento(&mut jugador.atributos.posicion, 'd'),*/
             'q' => return false, 
              _ => return true,
