@@ -217,16 +217,26 @@ impl Habitacion {
 }
 
 
-impl Jugador {
-    pub fn recoger_objeto(&mut self){
-        /*let objeto = crear_un_objeto_random(habitacion);
 
-        if objeto.posicion == self.atributos.posicion {
-            self.equipar_objeto(objeto);
-        } else {*/
-            // Lógica para manejar el caso en que la posición no es la misma
-            println!("No hay un objeto para recoger en tu posición.");
-    //}
+/* 
+fn recoger_pocion(pocion: Pocion, jugador: Jugador){
+    jugador.inventario.append(pocion);
+}
+*/
+
+
+impl Jugador {
+    pub fn recoger_objeto(&mut self/*,  objetos_suelo: &Vec<Recogible>*/){
+        
+        /*for objeto in objetos_suelo {
+            if objeto.posicion == self.atributos.posicion {
+                self.equipar_objeto(objeto.clone());
+                println!("Has recogido un objeto.");
+                return; 
+            }
+        }*/
+    
+        println!("No hay un objeto para recoger en tu posición.");
     }
     fn equipar_objeto(&mut self, objeto: TipoObjeto) {
         match objeto {
@@ -337,7 +347,7 @@ fn inicializar_jugador(habitacion: &mut Habitacion) -> &mut Habitacion{
             salud_actual: 100,
             daño: 100,
             prob_crit: 0,
-            armadura: 100,
+            armadura: 0,
             punteria: 0,
             esquiva: 0,
             invisible: false,

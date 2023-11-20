@@ -9,7 +9,7 @@ mod habitacion;
 mod nivel;
 
 use crate::{nivel::Nivel, habitacion::es_movimiento_valido};
-use crate::habitacion::{ Jugador,Armadura, Arma, Posicion, imprimir_habitacion, inicializar_habitaciones_nivel};
+use crate::habitacion::{ Armadura, Arma, Posicion, imprimir_habitacion, inicializar_habitaciones_nivel};
 
 const NIVELES_POR_JUEGO: usize = 1;// POR AHORA 1 PERO SON 5
 
@@ -123,23 +123,6 @@ fn movimiento(pos_actual: &mut Posicion, direccion: char){
         _ => return ,
     };
 }
-
-/* 
-// Esto le otorga el arma en el piso al jugador cuando apreta la tecla de recoger
-fn recoger_arma(arma: Arma, jugador: Jugador){
-    jugador.inventario.append(arma);
-}
-
-// Esto le otorga la armadura en el piso al jugador cuando apreta la tecla de recoger
-fn recoger_armadura(armadura: Armadura, jugador: Jugador){
-    jugador.inventario.append(armadura);
-}
-
-fn recoger_pocion(pocion: Pocion, jugador: Jugador){
-    jugador.inventario.append(pocion);
-}
-*/
-
 
 // Hace que el jugador pase de una habitacion a otra
 /*fn pasar_de_habitacion(jugador: Jugador, habitacion1: &mut Habitacion, habitacion2: &mut Habitacion){
