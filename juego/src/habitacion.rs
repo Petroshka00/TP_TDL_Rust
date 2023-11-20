@@ -192,12 +192,19 @@ impl Jugador {
 
 fn crear_un_objeto_random() -> TipoObjeto {
     let mut rng = rand::thread_rng();
-    let opcion = rng.gen_range(0..1);
+    let opcion = rng.gen_range(0..2);
 
     match opcion {
-        0 => TipoObjeto::Arma(Arma::new(10, 10,10)),
-        1 => TipoObjeto::Armadura(Armadura::new(10,10)),
-        _ => unreachable!(), 
+        0 => TipoObjeto::Arma(Arma::new(
+            rng.gen_range(5..15), // Daño aleatorio entre 5 y 14
+            rng.gen_range(5..15), // Probabilidad de crítico aleatoria entre 5 y 14
+            rng.gen_range(5..15), // Puntería aleatoria entre 5 y 14
+        )),
+        1 => TipoObjeto::Armadura(Armadura::new(
+            rng.gen_range(5..15), // Armadura aleatoria entre 5 y 14
+            rng.gen_range(5..15), // Esquiva aleatoria entre 5 y 14
+        )),
+        _ => unreachable!(),
     }
 }
 
