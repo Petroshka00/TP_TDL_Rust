@@ -4,18 +4,18 @@ const HABITACIONES_POR_NIVEL: usize = 2; // POR AHORA 2 PERO SON 5
 const PUERTAS_POR_HABITACION: usize = 4;
 
 pub struct Habitacion{
-    dimension_x : u32,
-    dimension_y : u32,
-    puertas: [Puerta; PUERTAS_POR_HABITACION],
-    jugadores: Vec<Jugador>,
-    enemigos: Vec<Enemigo>,
-    objetos_suelo : Vec<TipoObjeto>,
+    pub dimension_x : u32,
+    pub dimension_y : u32,
+    pub puertas: Vec<Puerta>,
+    pub jugadores: Vec<Jugador>,
+    pub enemigos: Vec<Enemigo>,
+    pub objetos_suelo : Vec<TipoObjeto>,
 }
 
-struct Puerta{
-    posicion: Posicion,
-    desde_hab: u32,
-    hasta_hab: u32,
+pub struct Puerta{
+    pub posicion: Posicion,
+    pub desde_hab: u32,
+    pub hasta_hab: u32,
 }
 
 enum Entidades{
@@ -25,11 +25,11 @@ enum Entidades{
 }
 
 pub struct Posicion{
-    x: u32,    
-    y: u32,
+    pub x: u32,    
+    pub y: u32,
 }
 
-enum TipoObjeto {
+pub enum TipoObjeto {
     Arma(Arma),
     Pocion(Pocion),
     Armadura(Armadura),
@@ -40,6 +40,7 @@ struct Arma{
     prob_crit: u32,
     punteria: u32,
 }
+
 struct Pocion{
     duracion: u32,
     funcionalidad: fn(),
@@ -80,60 +81,72 @@ impl Pocion{
     }
 }
 
-struct Armadura{
+pub struct Armadura{
     armadura: u32,
     esquiva: u32,
 }
 
-struct Atributos{
+pub struct Atributos{
     nombre: String,
-    posicion: Posicion,
-    salud_max: u32,
-    salud_actual: u32,
-    daño: u32,
-    prob_crit: u32,
-    armadura: u32,
-    punteria: u32,
-    esquiva: u32,
-    invisible: bool,
+    pub posicion: Posicion,
+    pub salud_max: u32,
+    pub salud_actual: u32,
+    pub daño: u32,
+    pub prob_crit: u32,
+    pub armadura: u32,
+    pub punteria: u32,
+    pub esquiva: u32,
+    pub invisible: bool,
 }
 
-struct Jugador{
-    atributos: Atributos,
+pub struct Jugador{
+    pub atributos: Atributos,
     arma_equipada: Arma,
     armadura_equipada: Armadura,
     inventario: Vec<TipoObjeto>, 
 }
 
-struct Enemigo{
+pub struct Enemigo{
 
 }
 
 impl Habitacion {
-    pub fn  crear_habitacion() -> Self {
+
+    pub fn crear_habitaciones(cantidad: usize) -> Vec<Habitacion> {
+        let mut habitaciones = Vec::with_capacity(cantidad);
+    
+        for _ in 0..cantidad {
+            let habitacion = Habitacion::crear_habitacion();
+            habitaciones.push(habitacion);
+        }
+    
+        habitaciones
+    }
+
+    pub fn crear_habitacion() -> Self {
         Habitacion {
             dimension_x: 10,
             dimension_y: 10,
-            puertas: [
+            puertas:vec! [
                 Puerta {
-                    posicion: Posicion { x: 1, y: 2 }, 
-                    desde_hab: 0, 
-                    hasta_hab: 1, 
+                    posicion: Posicion { x: 1, y: 2 },
+                    desde_hab: 0,
+                    hasta_hab: 1,
                 },
                 Puerta {
-                    posicion: Posicion { x: 5, y: 7 }, 
-                    desde_hab: 0, 
-                    hasta_hab: 2, 
+                    posicion: Posicion { x: 5, y: 7 },
+                    desde_hab: 0,
+                    hasta_hab: 2,
                 },
                 Puerta {
-                    posicion: Posicion { x: 8, y: 3 }, 
-                    desde_hab: 1, 
-                    hasta_hab: 0, 
+                    posicion: Posicion { x: 8, y: 3 },
+                    desde_hab: 1,
+                    hasta_hab: 0,
                 },
                 Puerta {
-                    posicion: Posicion { x: 2, y: 8 }, 
-                    desde_hab: 2, 
-                    hasta_hab: 0, 
+                    posicion: Posicion { x: 2, y: 8 },
+                    desde_hab: 2,
+                    hasta_hab: 0,
                 },
             ],
             jugadores: Vec::new(),
@@ -141,6 +154,8 @@ impl Habitacion {
             objetos_suelo: Vec::new(),
         }
     }
+
+
 }
 
 

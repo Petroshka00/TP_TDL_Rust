@@ -8,22 +8,23 @@ use crossterm::{execute, terminal::{ClearType, Clear}}; // biblioteca para limpi
 mod habitacion;
 mod nivel;
 
-use crate::nivel::{Nivel, crear_niveles};
+const NUM_NIVELES: usize = 2; 
+
+use crate::nivel::Nivel;
 use crate::habitacion::{/*Habitacion,*/ Posicion, imprimir_habitacion, inicializar_habitaciones_nivel};
 
 const NIVELES_POR_JUEGO: usize = 1;// POR AHORA 1 PERO SON 5
 
-struct Juego{
-    niveles: [Nivel; NIVELES_POR_JUEGO],
+pub struct Juego{
+    niveles: Vec<Nivel>,
 }
 
 fn crear_juego() -> Juego{
     
-    let mut niveles: crear_niveles();
+    //let mut niveles =  crear_niveles();
+    let niveles = Nivel::crear_niveles(NUM_NIVELES);
 
-    let mut juego = Juego {
-        niveles: [Nivel],
-    };
+    let juego = Juego { niveles };
 
     juego
 
