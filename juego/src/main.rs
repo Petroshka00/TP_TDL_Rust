@@ -82,7 +82,8 @@ fn movimiento(pos_actual: &mut Posicion, direccion: char){
         's' => pos_actual.y += 1,
         'a' => pos_actual.x -= 1,
         'd' => pos_actual.x += 1,
-        _ => return,
+        /*'e' => recoger_objeto(),*/
+        _ => return ,
     };
 }
 
@@ -174,6 +175,7 @@ fn recibir_movimiento(juego: &mut Juego)-> bool{
             's' => movimiento(&mut jugador.atributos.posicion, 's'),
             'a' => movimiento(&mut jugador.atributos.posicion, 'a'),
             'd' => movimiento(&mut jugador.atributos.posicion, 'd'),
+            /*'e' => movimiento(&mut jugador.atributos.posicion, 'd'),*/
             'q' => return false, 
              _ => return true,
         }

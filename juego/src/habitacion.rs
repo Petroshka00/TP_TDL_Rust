@@ -163,9 +163,9 @@ impl Jugador {
     fn recoger_objeto(&mut self, objeto: TipoObjeto) {
         self.inventario.push(objeto)
     }
-    fn usar_pocion(&mut self, indice_pocion: usize){
+    /*fn usar_pocion(&mut self, indice_pocion: usize){
         
-    }
+    }*/
 }
 
 // Esto genera una posicion aleatoria dentro de las dimensiones de la habitacion que recibe para colocar los objetos y enemigos al inicializar
@@ -282,7 +282,7 @@ fn inicializar_jugador(habitacion: &mut Habitacion) -> &mut Habitacion{
 }
 
 
-fn es_posicion_valida(posicion: Posicion, habitacion: &Habitacion) -> bool {
+pub fn es_posicion_valida(posicion: Posicion, habitacion: &Habitacion) -> bool {
     let max_x = habitacion.dimension_x - 1;
     let max_y = habitacion.dimension_y - 1;
     posicion.x >= 0 && posicion.x <= max_x && posicion.y >= 0 && posicion.y <= max_y
