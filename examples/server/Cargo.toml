@@ -1,12 +1,12 @@
 [package]
-name = "chat"
+name = "server"
 version = "0.0.0"
 workspace = "../"
 edition = "2021"
 publish = false
 
 [dependencies]
-rocket = { path = "../../core/lib", features = ["json"] }
+rocket = { version= "0.5.0-rc.1", features =["json"] }
 
 [dev-dependencies]
 rand = "0.8"
