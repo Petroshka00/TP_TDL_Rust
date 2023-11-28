@@ -184,24 +184,30 @@ fn main() -> rltk::BError {
 
     let mut rng = rltk::RandomNumberGenerator::new();
     for room in map.rooms.iter().skip(1) {
-        let (x,y) = room.center();
+        let (x, y) = room.center();
 
-        let glyph : rltk::FontCharType;
+        let glyph: rltk::FontCharType;
         let roll = rng.roll_dice(1, 2);
         match roll {
-            1 => { glyph = rltk::to_cp437('g') }
-            _ => { glyph = rltk::to_cp437('o') }
+            1 => glyph = rltk::to_cp437('g'),
+            _ => glyph = rltk::to_cp437('o'),
         }
 
-        gs.ecs.create_entity()
-        .with(Position{ x, y })
-        .with(Renderable{
-            glyph: glyph,
-            fg: RGB::named(rltk::RED),
-            bg: RGB::named(rltk::BLACK),
-        })
-        .with(Viewshed{ visible_tiles : Vec::new(), range: 8, dirty: true })
-        .build();
+        gs.ecs
+            .create_entity()
+            .with(Position { x, y })
+            .with(Renderable {
+                glyph: glyph,
+                fg: RGB::named(rltk::RED),
+                bg: RGB::named(rltk::BLACK),
+            })
+            .with(Viewshed {
+                visible_tiles: Vec::new(),
+                range: 8,
+                dirty: true,
+            })
+            .with(Monster {})
+            .build();
     }
     gs.ecs.insert(map);
     rltk::main_loop(context, gs)
