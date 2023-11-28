@@ -3,25 +3,9 @@ name = "juego"
 version = "0.1.0"
 edition = "2021"
 
-[workspace]
-resolver = "2"
-members = [
-  "core/lib/",
-  "core/codegen/",
-  "core/http/",
-  "contrib/db_pools/codegen/",
-  "contrib/db_pools/lib/",
-  "contrib/sync_db_pools/codegen/",
-  "contrib/sync_db_pools/lib/",
-  "contrib/dyn_templates/",
-  "contrib/ws/",
-  "site/tests",
-]
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1", features = ["full"] }
-tungstenite = "0.15.0"
-tokio-tungstenite = "0.16.0"
-crossterm = "0.20.0"
+rltk = { version = "0.8.0" }
+specs = "0.20.0"
+specs-derive = "0.4.1"
