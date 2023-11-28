@@ -22,15 +22,7 @@
   main {
       display: flex;
   }
-
-  #game-container {
-    width: 800px;
-    height: 600px;
-    margin: 50px auto;
-    border: 2px solid #ccc;
-    position: relative;
-  }
-
+  
   button:hover:not(.active) {
       filter: brightness(1.15);
       cursor: pointer;
