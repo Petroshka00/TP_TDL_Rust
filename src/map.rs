@@ -66,12 +66,14 @@ impl Map {
         self.tiles[idx as usize] != TileType::Wall
     }
 
+    // Registra los espacios bloqueados
     pub fn populate_blocked(&mut self) {
         for (i,tile) in self.tiles.iter_mut().enumerate() {
             self.blocked[i] = *tile == TileType::Wall;
         }
     }
 
+    
     pub fn clear_content_index(&mut self) {
         for content in self.tile_content.iter_mut() {
             content.clear();
