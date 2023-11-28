@@ -1,19 +1,35 @@
 use specs::prelude::*;
-use super::{Viewshed, Position, Map, Monster};
-use rltk::{field_of_view, Point, console};
+use super::{Viewshed, Monster, Name, Map, Position};
+use rltk::{Point, console};
 
 pub struct MonsterAI {}
 
 impl<'a> System<'a> for MonsterAI {
-    type SystemData = ( ReadStorage<'a, Viewshed>,
-                        ReadStorage<'a, Position>,
-                        ReadStorage<'a, Monster>);
+    #[allow(clippy::type_complexity)]
+    type SystemData = ( WriteExpect<'a, Map>,
+                        ReadExpect<'a, Point>,
+                        WriteStorage<'a, Viewshed>,
+                        ReadStorage<'a, Monster>,
+                        ReadStorage<'a, Name>,
+                        WriteStorage<'a, Position>);
 
     fn run(&mut self, data : Self::SystemData) {
-        let (viewshed, pos, monster) = data;
+        let (mut map, player_pos, mut viewshed, monster, name, mut position) = data;
 
-        for (viewshed,pos,_monster) in (&viewshed, &pos, &monster).join() {
-            console::log("Why are we still here, just to suffer?"); // Por ahora solo printea esto por pantalla
+        for (mut viewshed,_monster,name,mut pos) in (&mut viewshed, &monster, &name, &mut position).join() {
+            if viewshed.visible_tiles.contains(&*player_pos) {
+                console::log(&format!("{} te saluda y te esta siguiendo!", name.name));
+                let path = rltk::a_star_search(
+                    map.xy_idx(pos.x, pos.y) as i32,
+                    map.xy_idx(player_pos.x, player_pos.y) as i32,
+                    &mut *map
+                );
+                if path.success && path.steps.len()>1 {
+                    pos.x = path.steps[1] as i32 % map.width;
+                    pos.y = path.steps[1] as i32 / map.width;
+                    viewshed.dirty = true;
+                }
+            }
         }
     }
 }
