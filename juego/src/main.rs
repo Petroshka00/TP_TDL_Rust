@@ -23,6 +23,8 @@ mod rect;
 pub use rect::Rect;
 mod visibility_system;
 use visibility_system::VisibilitySystem;
+mod monster_ai_system;
+use monster_ai_system::MonsterAI;
 
 pub struct State {
     pub ecs: World
@@ -32,6 +34,8 @@ impl State {
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem{};
         vis.run_now(&self.ecs);
+        let mut mob = MonsterAI{};
+        mob.run_now(&self.ecs);
         self.ecs.maintain();
     }
 }

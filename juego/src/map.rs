@@ -19,10 +19,12 @@ pub struct Map {
 }
 
 impl Map {
+    /// Esta funcion sirve para encontrar el indice en el vector/array de la posicion xy
     pub fn xy_idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
     }
 
+    /// Genera un espacio vacio o habitacion en el mapa
     fn apply_room_to_map(&mut self, room : &Rect) {
         for y in room.y1 +1 ..= room.y2 {
             for x in room.x1 + 1 ..= room.x2 {
@@ -32,6 +34,7 @@ impl Map {
         }
     }
 
+    /// Genera espacios vacios entre 2 puntos horizontales
     fn apply_horizontal_tunnel(&mut self, x1:i32, x2:i32, y:i32) {
         for x in min(x1,x2) ..= max(x1,x2) {
             let idx = self.xy_idx(x, y);
@@ -41,6 +44,7 @@ impl Map {
         }
     }
 
+    /// Genera espacios vacios entre 2 puntos verticales
     fn apply_vertical_tunnel(&mut self, y1:i32, y2:i32, x:i32) {
         for y in min(y1,y2) ..= max(y1,y2) {
             let idx = self.xy_idx(x, y);
@@ -50,8 +54,7 @@ impl Map {
         }
     }
 
-    /// Makes a new map using the algorithm from http://rogueliketutorials.com/tutorials/tcod/part-3/
-    /// This gives a handful of random rooms and corridors joining them together.
+    /// Genera un mapa nuevo, con habitaciones y pasillos
     pub fn new_map_rooms_and_corridors() -> Map {
         let mut map = Map{
             tiles : vec![TileType::Wall; 80*50],
@@ -62,7 +65,7 @@ impl Map {
             visible_tiles : vec![false; 80*50]
         };
 
-        const MAX_ROOMS : i32 = 30;
+        const MAX_ROOMS : i32 = 30;     // Estos parametros pueden cambiarse segun el mapa
         const MIN_SIZE : i32 = 6;
         const MAX_SIZE : i32 = 10;
 
@@ -102,6 +105,7 @@ impl Map {
 }
 
 impl BaseMap for Map {
+    /// Hace que el mapa este completamente lleno de paredes, para despues ser vaciado para generar habitaciones, etc
     fn is_opaque(&self, idx:usize) -> bool {
         self.tiles[idx] == TileType::Wall
     }
@@ -113,13 +117,14 @@ impl Algorithm2D for Map {
     }
 }
 
+/// Dibuja el mapa en la consola
 pub fn draw_map(ecs: &World, ctx : &mut Rltk) {
     let map = ecs.fetch::<Map>();
 
     let mut y = 0;
     let mut x = 0;
     for (idx,tile) in map.tiles.iter().enumerate() {
-        // Render a tile depending upon the tile type
+        // Dibuja el tipo de "tile" correspondiente
 
         if map.revealed_tiles[idx] {
             let glyph;
@@ -138,7 +143,7 @@ pub fn draw_map(ecs: &World, ctx : &mut Rltk) {
             ctx.set(x, y, fg, RGB::from_f32(0., 0., 0.), glyph);
         }
 
-        // Move the coordinates
+        // Esto llega hasta 80 porque la pantalla mide 80, cambiar segun necesidad
         x += 1;
         if x > 79 {
             x = 0;
