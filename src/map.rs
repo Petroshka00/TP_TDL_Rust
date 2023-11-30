@@ -1,10 +1,13 @@
 use rltk::{ RGB, Rltk, RandomNumberGenerator, BaseMap, Algorithm2D, Point };
+
+use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
+
 use super::{Rect};
 use std::cmp::{max, min};
 use specs::prelude::*;
 
-const MAPWIDTH : usize = 80;
-const MAPHEIGHT : usize = 43;
+pub const MAPWIDTH : usize = SCREEN_WIDTH;
+pub const MAPHEIGHT : usize = SCREEN_HEIGHT - 7;
 const MAPCOUNT : usize = MAPHEIGHT * MAPWIDTH;
 
 #[derive(PartialEq, Copy, Clone)]
@@ -73,7 +76,7 @@ impl Map {
         }
     }
 
-    
+
     pub fn clear_content_index(&mut self) {
         for content in self.tile_content.iter_mut() {
             content.clear();
@@ -188,7 +191,7 @@ pub fn draw_map(ecs: &World, ctx : &mut Rltk) {
                 }
                 TileType::Wall => {
                     glyph = rltk::to_cp437('#');
-                    fg = RGB::from_f32(0., 1.0, 0.);
+                    fg = RGB::from_f32(0.4, 0.6, 0.5);
                 }
             }
             if !map.visible_tiles[idx] { fg = fg.to_greyscale() }
@@ -197,7 +200,7 @@ pub fn draw_map(ecs: &World, ctx : &mut Rltk) {
 
         // Esto llega hasta 80 porque la pantalla mide 80, cambiar segun necesidad
         x += 1;
-        if x > 79 {
+        if x > SCREEN_WIDTH - 1 {
             x = 0;
             y += 1;
         }

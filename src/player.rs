@@ -1,6 +1,8 @@
 use rltk::{VirtualKeyCode, Rltk, Point};
 use specs::prelude::*;
 use std::cmp::{max, min};
+use crate::{MAPWIDTH, MAPHEIGHT};
+
 use super::{Position, Player, Viewshed, State, Map, RunState, CombatStats, WantsToMelee};
 
 /// Intenta mover al jugador si es posible
@@ -20,14 +22,14 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         for potential_target in map.tile_content[destination_idx].iter() {
             let target = combat_stats.get(*potential_target);
             if let Some(_target) = target {
-                wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target }).expect("Add target failed");
+                wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target }).expect("No se pudo agregar el objetivo");
                 return;
             }
         }
 
         if !map.blocked[destination_idx] {
-            pos.x = min(79 , max(0, pos.x + delta_x));
-            pos.y = min(49, max(0, pos.y + delta_y));
+            pos.x = min(MAPWIDTH as i32 - 1, max(0, pos.x + delta_x));
+            pos.y = min(MAPHEIGHT  as i32 - 1, max(0, pos.y + delta_y));
 
             viewshed.dirty = true;
             let mut ppos = ecs.write_resource::<Point>();

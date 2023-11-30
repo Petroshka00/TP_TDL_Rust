@@ -18,8 +18,10 @@ mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
 mod damage_system;
 use damage_system::DamageSystem;
+mod gui;
 
-
+pub const SCREEN_WIDTH : usize = 120;
+pub const SCREEN_HEIGHT : usize = 75;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn }
@@ -87,12 +89,15 @@ impl GameState for State {
             let idx = map.xy_idx(pos.x, pos.y);
             if map.visible_tiles[idx] { ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph) }
         }
+
+        gui::draw_ui(&self.ecs, ctx);
     }
 }
 
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
-    let context = RltkBuilder::simple80x50()
+    let context = RltkBuilder::simple(SCREEN_WIDTH, SCREEN_HEIGHT)
+        .expect("La pantalla no se pudo generar con esas dimensiones")
         .with_title("Roguelike in progress")
         .build()?;
     let mut gs = State {
@@ -116,7 +121,7 @@ fn main() -> rltk::BError {
         .create_entity()
         .with(Position { x: player_x, y: player_y })
         .with(Renderable {
-            glyph: rltk::to_cp437('@'),
+            glyph: rltk::to_cp437('P'),
             fg: RGB::named(rltk::YELLOW),
             bg: RGB::named(rltk::BLACK),
         })
