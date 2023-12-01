@@ -26,7 +26,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     let damage = i32::max(0, stats.power - target_stats.defense);
 
                     if damage == 0 {
-                        log.entries.push(format!("{} no puede golpear {}", &name.name, &target_name.name));
+                        log.entries.push(format!("{} no puede golpear a {}", &name.name, &target_name.name));
                     } else {
                         log.entries.push(format!("{} golpea a {}, por {} de hp.", &name.name, &target_name.name, damage));
                         SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);

@@ -21,6 +21,8 @@ use damage_system::DamageSystem;
 mod gui;
 mod gamelog;
 mod spawner;
+mod inventory_system;
+use inventory_system::ItemCollectionSystem;
 
 pub const SCREEN_WIDTH : usize = 120;
 pub const SCREEN_HEIGHT : usize = 75;
@@ -36,14 +38,16 @@ impl State {
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem{};
         vis.run_now(&self.ecs);
-        let mut mob = MonsterAI{};
-        mob.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem{};
         mapindex.run_now(&self.ecs);
+        let mut mob = MonsterAI{};
+        mob.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
         melee.run_now(&self.ecs);
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
+        let mut pickup = ItemCollectionSystem{};
+        pickup.run_now(&self.ecs);
         self.ecs.maintain();
     }
 }
@@ -123,8 +127,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     for room in map.rooms.iter().skip(1) {
-        let (x,y) = room.center();
-        spawner::random_monster(&mut gs.ecs, x, y);
+        spawner::spawn_room(&mut gs.ecs, room);
     }
 
     gs.ecs.insert(map);
