@@ -1,13 +1,14 @@
 use rltk::{ RGB, Rltk, RandomNumberGenerator, BaseMap, Algorithm2D, Point };
 
-use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
+use crate::{SCREEN_WIDTH, SCREEN_HEIGHT, gui};
+use gui::GUI_HEIGHT;
 
 use super::{Rect};
 use std::cmp::{max, min};
 use specs::prelude::*;
 
 pub const MAPWIDTH : usize = SCREEN_WIDTH;
-pub const MAPHEIGHT : usize = SCREEN_HEIGHT - 7;
+pub const MAPHEIGHT : usize = SCREEN_HEIGHT - GUI_HEIGHT;
 const MAPCOUNT : usize = MAPHEIGHT * MAPWIDTH;
 
 #[derive(PartialEq, Copy, Clone)]

@@ -4,8 +4,8 @@ use specs::prelude::*;
 use super::{CombatStats, Player};
 use crate::{SCREEN_HEIGHT, SCREEN_WIDTH, gamelog::GameLog};
 
-const GUI_WIDTH : usize = SCREEN_WIDTH;
-const GUI_HEIGHT : usize = 10;
+pub const GUI_WIDTH : usize = SCREEN_WIDTH;
+pub const GUI_HEIGHT : usize = 10;
 
 
 pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
