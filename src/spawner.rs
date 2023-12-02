@@ -18,6 +18,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             glyph: rltk::to_cp437('P'),
             fg: RGB::named(rltk::YELLOW),
             bg: RGB::named(rltk::BLACK),
+            render_order : 0,
         })
         .with(Player {})
         .with(Viewshed {
@@ -83,6 +84,7 @@ fn monster<S: ToString>(
             glyph,
             fg: RGB::named(rltk::RED),
             bg: RGB::named(rltk::BLACK),
+            render_order : 1,
         })
         .with(Viewshed {
             visible_tiles: Vec::new(),

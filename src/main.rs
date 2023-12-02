@@ -28,7 +28,7 @@ pub const SCREEN_WIDTH : usize = 120;
 pub const SCREEN_HEIGHT : usize = 75;
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn }
+pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory }
 
 pub struct State {
     pub ecs: World
@@ -61,6 +61,9 @@ impl GameState for State {
             newrunstate = *runstate;
         }
 
+        draw_map(&self.ecs, ctx);
+        gui::draw_ui(&self.ecs, ctx);
+
         match newrunstate {
             RunState::PreRun => {
                 self.run_systems();
@@ -77,6 +80,20 @@ impl GameState for State {
                 self.run_systems();
                 newrunstate = RunState::AwaitingInput;
             }
+            RunState::ShowInventory => {
+                let result = gui::show_inventory(self, ctx);
+                match result.0 {
+                    gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
+                    gui::ItemMenuResult::NoResponse => {}
+                    gui::ItemMenuResult::Selected => {
+                        let item_entity = result.1.unwrap();
+                        let names = self.ecs.read_storage::<Name>();
+                        let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
+                        gamelog.entries.push(format!("You try to use {}, but it isn't written yet", names.get(item_entity).unwrap().name));
+                        newrunstate = RunState::AwaitingInput;
+                    }
+                }
+            }
         }
 
         {
@@ -85,7 +102,6 @@ impl GameState for State {
         }
         damage_system::delete_the_dead(&mut self.ecs);
 
-        draw_map(&self.ecs, ctx);
 
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
@@ -96,7 +112,6 @@ impl GameState for State {
             if map.visible_tiles[idx] { ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph) }
         }
 
-        gui::draw_ui(&self.ecs, ctx);
     }
 }
 
@@ -119,6 +134,9 @@ fn main() -> rltk::BError {
     gs.ecs.register::<CombatStats>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<SufferDamage>();
+    gs.ecs.register::<Item>();
+    gs.ecs.register::<InBackpack>();
+    gs.ecs.register::<WantsToPickupItem>();
 
     let map : Map = Map::new_map_rooms_and_corridors();
     let (player_x, player_y) = map.rooms[0].center();
