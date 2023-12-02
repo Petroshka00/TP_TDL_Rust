@@ -89,7 +89,7 @@ impl GameState for State {
                         let item_entity = result.1.unwrap();
                         let names = self.ecs.read_storage::<Name>();
                         let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-                        gamelog.entries.push(format!("You try to use {}, but it isn't written yet", names.get(item_entity).unwrap().name));
+                        gamelog.entries.push(format!("{} no existe todavia", names.get(item_entity).unwrap().name));
                         newrunstate = RunState::AwaitingInput;
                     }
                 }
@@ -137,6 +137,13 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Item>();
     gs.ecs.register::<InBackpack>();
     gs.ecs.register::<WantsToPickupItem>();
+    gs.ecs.register::<WantsToUseItem>();
+    gs.ecs.register::<WantsToDropItem>();
+    gs.ecs.register::<Equippable>();
+    gs.ecs.register::<Equipped>();
+    gs.ecs.register::<MeleePowerBonus>();
+    gs.ecs.register::<DefenseBonus>();
+    gs.ecs.register::<WantsToRemoveItem>();
 
     let map : Map = Map::new_map_rooms_and_corridors();
     let (player_x, player_y) = map.rooms[0].center();
