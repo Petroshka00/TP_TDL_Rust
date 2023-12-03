@@ -22,7 +22,7 @@ mod gui;
 mod gamelog;
 mod spawner;
 mod inventory_system;
-use inventory_system::ItemCollectionSystem;
+use inventory_system::{ItemCollectionSystem, ItemUseSystem, ItemDropSystem, ItemRemoveSystem};
 
 pub const SCREEN_WIDTH : usize = 120;
 pub const SCREEN_HEIGHT : usize = 75;
@@ -38,16 +38,23 @@ impl State {
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem{};
         vis.run_now(&self.ecs);
-        let mut mapindex = MapIndexingSystem{};
-        mapindex.run_now(&self.ecs);
         let mut mob = MonsterAI{};
         mob.run_now(&self.ecs);
+        let mut mapindex = MapIndexingSystem{};
+        mapindex.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
         melee.run_now(&self.ecs);
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem{};
         pickup.run_now(&self.ecs);
+        let mut itemuse = ItemUseSystem{};
+        itemuse.run_now(&self.ecs);
+        let mut drop_items = ItemDropSystem{};
+        drop_items.run_now(&self.ecs);
+        let mut item_remove = ItemRemoveSystem{};
+        item_remove.run_now(&self.ecs);
+
         self.ecs.maintain();
     }
 }
@@ -87,10 +94,9 @@ impl GameState for State {
                     gui::ItemMenuResult::NoResponse => {}
                     gui::ItemMenuResult::Selected => {
                         let item_entity = result.1.unwrap();
-                        let names = self.ecs.read_storage::<Name>();
-                        let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-                        gamelog.entries.push(format!("{} no existe todavia", names.get(item_entity).unwrap().name));
-                        newrunstate = RunState::AwaitingInput;
+                        let mut intent = self.ecs.write_storage::<WantsToUseItem>();
+                        intent.insert(*self.ecs.fetch::<Entity>(), WantsToUseItem{ item: item_entity, target: None }).expect("No se pudo insertar");
+                        newrunstate = RunState::PlayerTurn;
                     }
                 }
             }
