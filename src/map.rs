@@ -16,6 +16,7 @@ pub enum TileType {
     Wall, Floor, DownStairs
 }
 
+#[derive(Clone)]
 pub struct Map {
     pub tiles : Vec<TileType>,
     pub rooms : Vec<Rect>,
@@ -26,7 +27,6 @@ pub struct Map {
     pub blocked : Vec<bool>,
     pub tile_content : Vec<Vec<Entity>>,
     pub depth : i32,
-
 }
 
 impl Map {

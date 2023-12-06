@@ -9,7 +9,7 @@ const MAX_MONSTERS : i32 = 4;
 const MAX_ITEMS : i32 = 5;
 
 /// Spawnea el jugador y devuelve su entidad
-pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
+pub fn player(ecs: &mut World, player_x: i32, player_y: i32, player_id : i32, name : String) -> Entity {
     ecs.create_entity()
         .with(Position {
             x: player_x,
@@ -21,14 +21,14 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             bg: RGB::named(rltk::BLACK),
             render_order : 0,
         })
-        .with(Player {})
+        .with(Player { id: player_id })
         .with(Viewshed {
             visible_tiles: Vec::new(),
             range: 8,
             dirty: true,
         })
         .with(Name {
-            name: "Player".to_string(),
+            name,
         })
         .with(CombatStats {
             max_hp: 30,

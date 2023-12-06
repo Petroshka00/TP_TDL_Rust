@@ -17,7 +17,9 @@ pub struct Renderable {
 }
 
 #[derive(Component, Debug)]
-pub struct Player {}
+pub struct Player {
+    pub id: i32,
+}
 
 #[derive(Component)]
 pub struct Viewshed {

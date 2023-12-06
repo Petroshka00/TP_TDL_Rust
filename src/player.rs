@@ -78,7 +78,6 @@ pub fn try_next_level(ecs: &mut World) -> bool {
 
 /// Lee el input del usuario
 pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
-
     match ctx.key {
         None => { return RunState::AwaitingInput } // No se pulsa nada
         Some(key) => match key { // se pulsa algo
@@ -102,6 +101,12 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
 
             VirtualKeyCode::I => return RunState::ShowInventory,
 
+            VirtualKeyCode::Period => {
+                if try_next_level(&mut gs.ecs) {
+                    return RunState::NextLevel;
+                }
+            }
+            
             _ => { return RunState::AwaitingInput }
         },
     }

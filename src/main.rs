@@ -28,7 +28,7 @@ pub const SCREEN_WIDTH : usize = 120;
 pub const SCREEN_HEIGHT : usize = 75;
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory }
+pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn, ShowInventory, NextLevel }
 
 pub struct State {
     pub ecs: World
@@ -56,6 +56,82 @@ impl State {
         item_remove.run_now(&self.ecs);
 
         self.ecs.maintain();
+    }
+}
+
+impl State {
+    fn entities_to_remove_on_level_change(&mut self) -> Vec<Entity> {
+        let entities = self.ecs.entities();
+        let player = self.ecs.read_storage::<Player>();
+        let backpack = self.ecs.read_storage::<InBackpack>();
+        let player_entity = self.ecs.fetch::<Entity>();
+
+        let mut to_delete : Vec<Entity> = Vec::new();
+        for entity in entities.join() {
+            let mut should_delete = true;
+
+            let p = player.get(entity);
+            if let Some(_p) = p {
+                should_delete = false;
+            }
+
+            let bp = backpack.get(entity);
+            if let Some(bp) = bp {
+                if bp.owner == *player_entity {
+                    should_delete = false;
+                }
+            }
+
+            if should_delete {
+                to_delete.push(entity);
+            }
+        }
+
+        to_delete
+    }
+
+    fn goto_next_level(&mut self) {
+        let to_delete = self.entities_to_remove_on_level_change();
+        for target in to_delete {
+            self.ecs.delete_entity(target).expect("No se pudo borrar la entidad");
+        }
+    
+        let worldmap;
+        {
+            let mut worldmap_resource = self.ecs.write_resource::<Map>();
+            let current_depth = worldmap_resource.depth;
+            *worldmap_resource = Map::new_map_rooms_and_corridors(current_depth + 1);
+            worldmap = worldmap_resource.clone();
+        }
+
+        for room in worldmap.rooms.iter().skip(1) {
+            spawner::spawn_room(&mut self.ecs, room);
+        }
+    
+        let (player_x, player_y) = worldmap.rooms[0].center();
+        let mut player_position = self.ecs.write_resource::<Point>();
+        *player_position = Point::new(player_x, player_y);
+        let mut position_components = self.ecs.write_storage::<Position>();
+        let player_entity = self.ecs.fetch::<Entity>();
+        let player_pos_comp = position_components.get_mut(*player_entity);
+        if let Some(player_pos_comp) = player_pos_comp {
+            player_pos_comp.x = player_x;
+            player_pos_comp.y = player_y;
+        }
+    
+        let mut viewshed_components = self.ecs.write_storage::<Viewshed>();
+        let vs = viewshed_components.get_mut(*player_entity);
+        if let Some(vs) = vs {
+            vs.dirty = true;
+        }
+    
+        let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
+        gamelog.entries.push("Bajas al siguiente nivel y te curas un poco".to_string());
+        let mut player_health_store = self.ecs.write_storage::<CombatStats>();
+        let player_health = player_health_store.get_mut(*player_entity);
+        if let Some(player_health) = player_health {
+            player_health.hp = i32::max(player_health.hp, player_health.max_hp / 2); // Todavia no meti formas de curarse asi que se cura al bajar de piso
+        }
     }
 }
 
@@ -88,6 +164,7 @@ impl GameState for State {
         match newrunstate {
             RunState::PreRun => {
                 self.run_systems();
+                self.ecs.maintain();
                 newrunstate = RunState::AwaitingInput;
             }
             RunState::AwaitingInput => {
@@ -95,10 +172,12 @@ impl GameState for State {
             }
             RunState::PlayerTurn => {
                 self.run_systems();
+                self.ecs.maintain();
                 newrunstate = RunState::MonsterTurn;
             }
             RunState::MonsterTurn => {
                 self.run_systems();
+                self.ecs.maintain();
                 newrunstate = RunState::AwaitingInput;
             }
             RunState::ShowInventory => {
@@ -113,6 +192,10 @@ impl GameState for State {
                         newrunstate = RunState::PlayerTurn;
                     }
                 }
+            }
+            RunState::NextLevel => {
+                self.goto_next_level();
+                newrunstate = RunState::PreRun;
             }
         }
 
@@ -156,18 +239,17 @@ fn main() -> rltk::BError {
     gs.ecs.register::<WantsToRemoveItem>();
 
     let map : Map = Map::new_map_rooms_and_corridors(1);
-    let (player_x, player_y) = map.rooms[0].center();
-
-    let player_entity = spawner::player(&mut gs.ecs, player_x, player_y);
-
+    let (player_x0, player_y0) = map.rooms[0].center();
+    let player_entity0 = spawner::player(&mut gs.ecs, player_x0, player_y0, 0, "Tomas".to_string());
+    
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     for room in map.rooms.iter().skip(1) {
         spawner::spawn_room(&mut gs.ecs, room);
     }
 
     gs.ecs.insert(map);
-    gs.ecs.insert(Point::new(player_x, player_y));
-    gs.ecs.insert(player_entity);
+    gs.ecs.insert(Point::new(player_x0, player_y0));
+    gs.ecs.insert(player_entity0);
     gs.ecs.insert(RunState::PreRun);
     gs.ecs.insert(gamelog::GameLog{ entries : vec!["Bienvenido!".to_string()] });
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
