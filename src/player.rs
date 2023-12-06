@@ -71,7 +71,7 @@ pub fn try_next_level(ecs: &mut World) -> bool {
         true
     } else {
         let mut gamelog = ecs.fetch_mut::<GameLog>();
-        gamelog.entries.push("There is no way down from here.".to_string());
+        gamelog.entries.push("No se puede bajar por aqui.".to_string());
         false
     }
 }
@@ -101,7 +101,7 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
 
             VirtualKeyCode::I => return RunState::ShowInventory,
 
-            VirtualKeyCode::Period => {
+            VirtualKeyCode::X => {
                 if try_next_level(&mut gs.ecs) {
                     return RunState::NextLevel;
                 }
