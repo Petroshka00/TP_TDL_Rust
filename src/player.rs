@@ -1,7 +1,7 @@
 use rltk::{VirtualKeyCode, Rltk, Point};
 use specs::prelude::*;
 use std::cmp::{max, min};
-use crate::{MAPWIDTH, MAPHEIGHT, Item, gamelog::GameLog, WantsToPickupItem};
+use crate::{MAPWIDTH, MAPHEIGHT, Item, gamelog::GameLog, WantsToPickupItem, TileType};
 
 use super::{Position, Player, Viewshed, State, Map, RunState, CombatStats, WantsToMelee};
 
@@ -55,11 +55,24 @@ fn get_item(ecs: &mut World) {
     }
 
     match target_item {
-        None => gamelog.entries.push("There is nothing here to pick up.".to_string()),
+        None => gamelog.entries.push("No hay nada aqui para recoger".to_string()),
         Some(item) => {
             let mut pickup = ecs.write_storage::<WantsToPickupItem>();
-            pickup.insert(*player_entity, WantsToPickupItem{ collected_by: *player_entity, item }).expect("Unable to insert want to pickup");
+            pickup.insert(*player_entity, WantsToPickupItem{ collected_by: *player_entity, item }).expect("No se pudo insertar");
         }
+    }
+}
+
+pub fn try_next_level(ecs: &mut World) -> bool {
+    let player_pos = ecs.fetch::<Point>();
+    let map = ecs.fetch::<Map>();
+    let player_idx = map.xy_idx(player_pos.x, player_pos.y);
+    if map.tiles[player_idx] == TileType::DownStairs {
+        true
+    } else {
+        let mut gamelog = ecs.fetch_mut::<GameLog>();
+        gamelog.entries.push("There is no way down from here.".to_string());
+        false
     }
 }
 

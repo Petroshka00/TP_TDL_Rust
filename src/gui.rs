@@ -2,7 +2,7 @@ use rltk::{ RGB, Rltk, Console, VirtualKeyCode };
 use specs::prelude::*;
 
 use super::{CombatStats, Player};
-use crate::{SCREEN_HEIGHT, SCREEN_WIDTH, gamelog::GameLog, State, Name, InBackpack, Equipped};
+use crate::{SCREEN_HEIGHT, SCREEN_WIDTH, gamelog::GameLog, State, Name, InBackpack, Equipped, Map};
 
 pub const GUI_WIDTH : usize = SCREEN_WIDTH;
 pub const GUI_HEIGHT : usize = 10;
@@ -143,7 +143,8 @@ pub fn remove_item_menu(gs : &mut State, ctx : &mut Rltk) -> (ItemMenuResult, Op
 }
 
 pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
-    ctx.draw_box(0, SCREEN_HEIGHT - GUI_HEIGHT - 1, GUI_WIDTH - 1, GUI_HEIGHT, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
+    let box_upper_limit = SCREEN_HEIGHT - GUI_HEIGHT - 1;
+    ctx.draw_box(0, box_upper_limit, GUI_WIDTH - 1, GUI_HEIGHT, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
 
     let log = ecs.fetch::<GameLog>();
 
@@ -152,6 +153,10 @@ pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
         if y < SCREEN_HEIGHT - 1 { ctx.print(2, y, s); }
         y += 1;
     }
+
+    let map = ecs.fetch::<Map>();
+    let depth = format!("Piso: {}", map.depth);
+    ctx.print_color(2, box_upper_limit, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), &depth);
 
     let combat_stats = ecs.read_storage::<CombatStats>();
     let players = ecs.read_storage::<Player>();

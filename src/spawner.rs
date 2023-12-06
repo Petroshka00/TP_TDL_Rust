@@ -110,9 +110,9 @@ pub fn random_equipment(ecs: &mut World, x: i32, y: i32) {
     let roll: i32;
     {
         let mut rng = ecs.write_resource::<RandomNumberGenerator>();
-        roll = rng.roll_dice(1, 20);
+        roll = rng.roll_dice(1, 10);
     }
-    match roll {    // Asegurarse que la generacion de monstruos comprende TODOS los valores de la funcion de roll_dice
+    match roll {    // Asegurarse que la generacion de objetos comprende TODOS los valores de la funcion de roll_dice
         1 => espada(ecs, x, y),
         2 => daga(ecs, x, y),
         3 => martillo(ecs, x, y),
