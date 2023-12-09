@@ -13,10 +13,13 @@ pub struct Renderable {
     pub glyph: rltk::FontCharType,
     pub fg: RGB,
     pub bg: RGB,
+    pub render_order : i32
 }
 
 #[derive(Component, Debug)]
-pub struct Player {}
+pub struct Player {
+    pub id: i32,
+}
 
 #[derive(Component)]
 pub struct Viewshed {
@@ -63,4 +66,58 @@ impl SufferDamage {
             store.insert(victim, dmg).expect("Unable to insert damage");
         }
     }
+}
+
+#[derive(Component, Debug)]
+pub struct Item{}
+
+#[derive(Component, Debug, Clone)]
+pub struct InBackpack {
+    pub owner : Entity
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToPickupItem {
+    pub collected_by : Entity,
+    pub item : Entity
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToUseItem {
+    pub item : Entity,
+    pub target : Option<rltk::Point>
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToDropItem {
+    pub item : Entity
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToRemoveItem {
+    pub item : Entity
+}
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum EquipmentSlot { Weapon, Shield, Armor, Helmet }
+
+#[derive(Component, Clone)]
+pub struct Equippable {
+    pub slot : EquipmentSlot
+}
+
+#[derive(Component, Clone)]
+pub struct Equipped {
+    pub owner : Entity,
+    pub slot : EquipmentSlot
+}
+
+#[derive(Component, Clone)]
+pub struct MeleePowerBonus {
+    pub power : i32
+}
+
+#[derive(Component, Clone)]
+pub struct DefenseBonus {
+    pub defense : i32
 }

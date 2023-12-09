@@ -1,20 +1,22 @@
 use rltk::{ RGB, Rltk, RandomNumberGenerator, BaseMap, Algorithm2D, Point };
 
-use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
+use crate::{SCREEN_WIDTH, SCREEN_HEIGHT, gui};
+use gui::GUI_HEIGHT;
 
 use super::{Rect};
 use std::cmp::{max, min};
 use specs::prelude::*;
 
 pub const MAPWIDTH : usize = SCREEN_WIDTH;
-pub const MAPHEIGHT : usize = SCREEN_HEIGHT - 7;
+pub const MAPHEIGHT : usize = SCREEN_HEIGHT - GUI_HEIGHT;
 const MAPCOUNT : usize = MAPHEIGHT * MAPWIDTH;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
-    Wall, Floor
+    Wall, Floor, DownStairs
 }
 
+#[derive(Clone)]
 pub struct Map {
     pub tiles : Vec<TileType>,
     pub rooms : Vec<Rect>,
@@ -23,7 +25,8 @@ pub struct Map {
     pub revealed_tiles : Vec<bool>,
     pub visible_tiles : Vec<bool>,
     pub blocked : Vec<bool>,
-    pub tile_content : Vec<Vec<Entity>>
+    pub tile_content : Vec<Vec<Entity>>,
+    pub depth : i32,
 }
 
 impl Map {
@@ -84,7 +87,7 @@ impl Map {
     }
 
     /// Genera un mapa nuevo, con habitaciones y pasillos
-    pub fn new_map_rooms_and_corridors() -> Map {
+    pub fn new_map_rooms_and_corridors(new_depth: i32) -> Map {
         let mut map = Map{
             tiles : vec![TileType::Wall; MAPCOUNT],
             rooms : Vec::new(),
@@ -93,7 +96,8 @@ impl Map {
             revealed_tiles : vec![false; MAPCOUNT],
             visible_tiles : vec![false; MAPCOUNT],
             blocked : vec![false; MAPCOUNT],
-            tile_content : vec![Vec::new(); MAPCOUNT]
+            tile_content : vec![Vec::new(); MAPCOUNT],
+            depth: new_depth
         };
 
         const MAX_ROOMS : i32 = 30;     // Estos parametros pueden cambiarse segun el mapa
@@ -130,6 +134,9 @@ impl Map {
                 map.rooms.push(new_room);
             }
         }
+        let stairs_position = map.rooms[map.rooms.len()-1].center();
+        let stairs_idx = map.xy_idx(stairs_position.0, stairs_position.1);
+        map.tiles[stairs_idx] = TileType::DownStairs;
 
         map
     }
@@ -192,6 +199,10 @@ pub fn draw_map(ecs: &World, ctx : &mut Rltk) {
                 TileType::Wall => {
                     glyph = rltk::to_cp437('#');
                     fg = RGB::from_f32(0.4, 0.6, 0.5);
+                }
+                TileType::DownStairs => {
+                    glyph = rltk::to_cp437('↓');
+                    fg = RGB::from_f32(1.0, 1.0, 0.);
                 }
             }
             if !map.visible_tiles[idx] { fg = fg.to_greyscale() }
