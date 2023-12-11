@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use crate::{gamelog::GameLog, Name};
+use crate::{gamelog::GameLog, Name, RunState};
 
 use super::{CombatStats, SufferDamage, Player};
 use rltk::console;
@@ -36,11 +36,14 @@ pub fn delete_the_dead(ecs : &mut World) {
                     None => {
                         let victim_name = names.get(entity);
                         if let Some(victim_name) = victim_name {
-                            log.entries.push(format!("{} ha muerto", &victim_name.name));
+                            log.entries.push(format!("{} is dead", &victim_name.name));
                         }
                         dead.push(entity)
                     }
-                    Some(_) => console::log("Estas muerto")
+                    Some(_) => {
+                        let mut runstate = ecs.write_resource::<RunState>();
+                        *runstate = RunState::GameOver;
+                    }
                 }
             }
         }
