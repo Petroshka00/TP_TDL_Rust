@@ -1,8 +1,7 @@
 use specs::prelude::*;
 
 use super::{WantsToPickupItem, Name, InBackpack, Position, gamelog::GameLog, WantsToUseItem,
-    CombatStats, WantsToDropItem, Map, SufferDamage,
-    Equippable, Equipped, WantsToRemoveItem};
+    WantsToDropItem, Equippable, Equipped, WantsToRemoveItem};
 
 pub struct ItemCollectionSystem {}
 
@@ -38,12 +37,9 @@ impl<'a> System<'a> for ItemUseSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = ( ReadExpect<'a, Entity>,
                         WriteExpect<'a, GameLog>,
-                        ReadExpect<'a, Map>,
                         Entities<'a>,
                         WriteStorage<'a, WantsToUseItem>,
                         ReadStorage<'a, Name>,
-                        WriteStorage<'a, CombatStats>,
-                        WriteStorage<'a, SufferDamage>,
                         ReadStorage<'a, Equippable>,
                         WriteStorage<'a, Equipped>,
                         WriteStorage<'a, InBackpack>
@@ -51,11 +47,10 @@ impl<'a> System<'a> for ItemUseSystem {
 
     #[allow(clippy::cognitive_complexity)]
     fn run(&mut self, data : Self::SystemData) {    // Aca me quedaron variables sin usar pero las dejo por si implemento pociones
-        let (player_entity, mut gamelog, map, entities, mut wants_use, names,
-            mut combat_stats, mut suffer_damage,
+        let (player_entity, mut gamelog, entities, mut wants_use, names,
             equippable, mut equipped, mut backpack) = data;
 
-        for (entity, useitem) in (&entities, &wants_use).join() { // lo mismo aca
+        for (_entity, useitem) in (&entities, &wants_use).join() { // lo mismo aca
             let target = *player_entity;
 
             // Si te estas equipando algo y ya tenes otra cosa equipada, primero hay que desequipar
