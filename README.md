@@ -1,8 +1,10 @@
 # TP_TDL_Rust
 
-Integrante 1 - Tomas Petrocini
-Integrante 2 - Macarena Oviedo
-Integrante 3 - Florencia Pratto
+Integrante 1 - [Tomas Petrocini ](https://github.com/Petroshka00)
+
+Integrante 2 - [Macarena Oviedo](https://github.com/macarenaoviedo31)
+
+Integrante 3 - [Florencia Pratto ](https://github.com/fnpratto)
 
 El objetivo del trabajo práctico es analizar un lenguaje de programación (rust) considerando los puntos vistos durante la cursada de la materia TEORIA DE LENGUAJE (7531).
 
