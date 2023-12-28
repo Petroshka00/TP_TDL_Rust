@@ -46,7 +46,7 @@ impl<'a> System<'a> for ItemUseSystem {
 );
 
     #[allow(clippy::cognitive_complexity)]
-    fn run(&mut self, data : Self::SystemData) {    // Aca me quedaron variables sin usar pero las dejo por si implemento pociones
+    fn run(&mut self, data : Self::SystemData) {
         let (player_entity, mut gamelog, entities, mut wants_use, names,
             equippable, mut equipped, mut backpack) = data;
 

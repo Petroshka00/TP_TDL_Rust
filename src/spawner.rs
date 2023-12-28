@@ -6,7 +6,7 @@ use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
 
 const MAX_MONSTERS : i32 = 4;
-const MAX_ITEMS : i32 = 5;
+const MAX_ITEMS : i32 = 3;
 
 /// Spawnea el jugador y devuelve su entidad
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32, player_id : i32, name : String) -> Entity {
@@ -192,7 +192,7 @@ pub fn spawn_room(ecs: &mut World, room : &Rect) {
             }
         }
 
-        let num_weapons = rng.roll_dice(1, MAX_ITEMS + 4) - 3;
+        let num_weapons = rng.roll_dice(1, MAX_ITEMS + 2) - 3;
 
         for _i in 0 .. num_weapons {
             let mut added = false;
